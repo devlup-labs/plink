@@ -190,13 +190,3 @@ OPTIONS:
 3. Update documentation if needed
 4. Ensure all tests pass
 5. Submit pull request with clear description
-
-## How to contribute 
-
-- Fork this repo 
-- Install virtual environment in current directory
-- Install required packages using -> pip install -r requirements.txt
-- Make some useful changes
-- Test those changes and make sure nothing breaks.
-- Create a pull request
-

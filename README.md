@@ -1,7 +1,7 @@
-# Plink - Peer-to-Peer File Transfer
+# plink - Peer-to-Peer File Transfer
 
 
-Plink is a secure, efficient peer-to-peer file transfer tool that enables direct file sharing between devices without relying on centralized servers. Built with modularity and security in mind, Plink implements multiple connection strategies and robust encryption to ensure safe and reliable file transfers.
+plink is a secure, efficient peer-to-peer file transfer tool that enables direct file sharing between devices without relying on centralized servers. Built with modularity and security in mind.
 
 ## Features
 
@@ -16,7 +16,6 @@ Plink is a secure, efficient peer-to-peer file transfer tool that enables direct
 ```
 plink/
 ├── README.md
-├── LICENSE
 ├── requirements.txt
 ├── setup.py
 ├── .gitignore
@@ -38,10 +37,6 @@ plink/
 │   │   │   ├── upnp_connection.py
 │   │   │   ├── hole_punching.py
 │   │   │   └── role_reversal.py
-│   │   ├── protocols/
-│   │   │   ├── __init__.py
-│   │   │   ├── handshake.py
-│   │   │   ├── file_metadata.py
 │   │   └── utils/
 │   │       ├── __init__.py
 │   │       ├── network_utils.py
@@ -53,10 +48,10 @@ plink/
 │       │   ├── encryption.py
 │       │   ├── key_exchange.py
 │       │   └── hash_verification.py
-│       ├── chunking/
+│       ├── data/
 │       │   ├── __init__.py
 │       │   ├── chunk_manager.py
-│       │   ├── chunk_validator.py
+│       │   ├── metadata.py
 │       │   └── compression.py
 │       └── utils/
 │           ├── __init__.py
@@ -164,7 +159,8 @@ OPTIONS:
 ### Pull Request Process
 
 1. Create a feature branch from `main`
-2. Make your changes with appropriate tests
-3. Update documentation if needed
-4. Ensure all tests pass
-5. Submit pull request with clear description
+2. Make virtual environments and install requirements.txt
+3. Make your changes with appropriate tests
+4. Update documentation and requirement.txt if needed
+5. Ensure all tests pass
+6. Submit pull request with clear description

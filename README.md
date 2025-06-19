@@ -32,7 +32,6 @@ plink/
 │   │   │   ├── __init__.py
 │   │   │   ├── connection_manager.py
 │   │   │   ├── peer_discovery.py
-│   │   │   └── transfer_session.py
 │   │   ├── strategies/
 │   │   │   ├── __init__.py
 │   │   │   ├── direct_connection.py
@@ -43,7 +42,6 @@ plink/
 │   │   │   ├── __init__.py
 │   │   │   ├── handshake.py
 │   │   │   ├── file_metadata.py
-│   │   │   └── transfer_protocol.py
 │   │   └── utils/
 │   │       ├── __init__.py
 │   │       ├── network_utils.py
@@ -75,7 +73,6 @@ plink/
     └── config/
         ├── __init__.py
         ├── settings.py
-        └── validators.py
 ```
 
 ### Prerequisites

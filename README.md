@@ -65,36 +65,17 @@ plink/
 │           ├── crypto_utils.py
 │           └── random_generator.py
 ├── frontend/
-│   ├── __init__.py
-│   ├── cli/
-│   │   ├── __init__.py
-│   │   ├── argument_parser.py
-│   │   ├── command_handler.py
-│   │   └── output_formatter.py
-│   ├── interface/
-│   │   ├── __init__.py
-│   │   ├── sender_interface.py
-│   │   ├── receiver_interface.py
-│   │   └── status_display.py
-│   └── config/
-│       ├── __init__.py
-│       ├── settings.py
-│       └── validators.py
-├── tests/
-│   ├── __init__.py
-│   ├── unit/
-│   │   ├── test_networking/
-│   │   ├── test_cryptography/
-│   │   └── test_frontend/
-│   ├── integration/
-│   │   ├── test_file_transfer.py
-│   │   └── test_connection_strategies.py
-│   └── fixtures/
-│       └── sample_files/
-└── examples/
-    ├── basic_transfer.py
-    ├── batch_transfer.py
-    └── advanced_configuration.py
+    ├── __init__.py
+    ├── cli/
+    │   ├── __init__.py
+    │   ├── argument_parser.py
+    │   ├── command_handler.py
+    │   └── output_formatter.py
+    │  
+    └── config/
+        ├── __init__.py
+        ├── settings.py
+        └── validators.py
 ```
 
 ### Prerequisites

@@ -6,9 +6,6 @@ Purpose: To parse command line arguments for a file transfer application.
 Input: None
 Output: Parsed arguments as an object.
 '''
-
-
-
 def parsing_argument() :
     
     #creating a parser

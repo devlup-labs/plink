@@ -1,21 +1,41 @@
 import argparse
 
-def get_parser():
-    parser = argparse.ArgumentParser(description="PLINK CLI Argument Parser")
+'''
+Function name: parsing_argument
+Purpose: To parse command line arguments for a file transfer application.
+Input: None
+Output: Parsed arguments as an object.
+'''
+def parsing_argument() :
     
-    parser.add_argument('-m','--method',help = 'method to use for networking',choices = ['direct', 'hole-punch', 'upnp', 'role-reversal'])
-    parser.add_argument('-p', '--port', type=int, default=8080, help='Port to use for networking (default: 8080)')
-    parser.add_argument('-e', '--encryption', choices = ['aes256', 'chacha20'], default = 'chacha20', help = 'Encryption method to use')
-    parser.add_argument('-c','--chunk-size', type=int, default=1024, help='Size of data chunks to send (default: 1024 bytes)')
-    parser.add_argument('--compress' , action='store_true', help='Enable compression for data transfer')
-    parser.add_argument('--password', type=str, help='set transfer password')
-    parser.add_argument('--resume', action='store_true', help='Resume interrupted transfers')
-    parser.add_argument('--verify', action='store_true', help='Verify file integrity after transfer')
+    #creating a parser
+    parser=argparse.ArgumentParser("plink")
 
-    parser.add_argument('-o', '--output-directory', type=str, default='.', help='Directory to save received files (default: current directory)')
-    parser.add_argument('--auto-accept', action='store_true', help='Automatically accept transfers')
-    parser.add_argument('--max-size', type=int, default=0, help='Maximum size of files to accept (default: 0, for no limit)')
+    #creating a subparser for commands like send or receive
+    subparsers=parser.add_subparsers(dest="command",help="give command like send or receive")
 
-    parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose output')
+    #creating subparser for send and giving optional arguments
+    send_parser=subparsers.add_parser("send", help="give command of send")
+    send_parser.add_argument("filepath", help="path of the file to send")
+    send_parser.add_argument("--method", "-m", help = "Connection method (direct, upnp, hole-punch, role-reverse)",choices=["direct","upnp","hole-punch","role-reverse"])
+    send_parser.add_argument("--port", "-p", help= "Port number (default: 8080)",default=8080, type=int)
+    send_parser.add_argument("--encryption", "-e", help = "Encryption method (aes256, chacha20)")
+    send_parser.add_argument("--chunk-size", "-c", help = "Chunk size in KB (default: 1024)", default=1024, type=int)
+    send_parser.add_argument("--compress", help = "Enable compression", action="store_true")
+    send_parser.add_argument("--password", help = "Set transfer password")
+    send_parser.add_argument("--timeout", help = "Connection timeout in seconds", type=int) 
+    send_parser.add_argument("--resume", help = "Resume interrupted transfer",action="store_true")
+    send_parser.add_argument("--verify", help = "Verify file integrity after transfer", action="store_true")
 
-    return parser
+    #creating subparser for receive and giving optional arguments
+    receive_parser=subparsers.add_parser("receive", help="give command of receive")
+    receive_parser.add_argument("--output-dir", "-o", help = "Output directory (default: current directory)", default=".")
+    receive_parser.add_argument("--port", "-p", help = "Port number (default: 8080)", default=8080, type=int)
+    receive_parser.add_argument("--method", "-m", help = "Preferred connection method")
+    receive_parser.add_argument("--password", help  = "Transfer password")
+    receive_parser.add_argument("--auto-accept", help = "Automatically accept transfers",action="store_true")
+    receive_parser.add_argument("--max-size", help = "Maximum file size to accept (MB)", type=int, default=1)
+
+    args=parser.parse_args()
+
+    return args

@@ -1,9 +1,15 @@
 import argparse
 
+'''
+Function name: parsing_argument
+Purpose: To parse command line arguments for a file transfer application.
+Input: None
+Output: Parsed arguments as an object.
+'''
 def parsing_argument() :
     
     #creating a parser
-    parser=argparse.ArgumentParser("P-Link")
+    parser=argparse.ArgumentParser("plink")
 
     #creating a subparser for commands like send or receive
     subparsers=parser.add_subparsers(dest="command",help="give command like send or receive")
@@ -28,7 +34,7 @@ def parsing_argument() :
     receive_parser.add_argument("--method", "-m", help = "Preferred connection method")
     receive_parser.add_argument("--password", help  = "Transfer password")
     receive_parser.add_argument("--auto-accept", help = "Automatically accept transfers",action="store_true")
-    receive_parser.add_argument("--max-size", help = "Maximum file size to accept (MB)", type=int)
+    receive_parser.add_argument("--max-size", help = "Maximum file size to accept (MB)", type=int, default=1)
 
     args=parser.parse_args()
 

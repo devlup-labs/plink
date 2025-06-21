@@ -1,3 +1,10 @@
+"""
+Function Name: divide_in_chunks
+Purpose: divide given file/folder in chunks given path and CHUNK_SIZE
+Inputs: CHUNK_SIZE
+Outputs: yield tuple of (chunk_name : chunk_data) and chunk_name being 1,2,3…n
+
+"""
 from pathlib import Path
 
 def divide_in_chunks(path, CHUNK_SIZE):

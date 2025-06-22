@@ -6,7 +6,7 @@ Outputs: output_path of output_file which compressed file of file/folder of whic
 
 """
 from pathlib import Path
-import zstd
+import zstandard as zstd
 import tarfile
 
 APP_COMPRESSED_DIR = Path("compressed_output")  # Update this path as needed
@@ -16,6 +16,8 @@ def compress_file(path):
     
     path = Path(path)
     cctx = zstd.ZstdCompressor(level=3)
+    
+    output_path = None
     
     if path.is_file():
         
@@ -45,5 +47,5 @@ def compress_file(path):
     else:
         print("Invalid path")
         
-    return str(output_path)
+    return str(output_path) if output_path else None
     

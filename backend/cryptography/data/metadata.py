@@ -19,10 +19,11 @@ def retrieve_metadata(path ,CHUNK_SIZE):
         
         else:
             
-            size = sum(file.stat().st_size for file in p.rglob("*") if file.isfile())
+            size = sum(file.stat().st_size for file in p.rglob("*") if file.is_file())
     
     else:
         print("Invalid Path Provided")
+        return None
             
             
     total_chunks = math.ceil(size/CHUNK_SIZE)

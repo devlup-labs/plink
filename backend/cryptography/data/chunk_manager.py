@@ -17,7 +17,7 @@ def divide_in_chunks(path, CHUNK_SIZE):
             chunk_id = 1
             while True:
                 chunk = f.read(CHUNK_SIZE)
-                if chunk ==False:
+                if not chunk:
                     break
                 yield str(chunk_id), chunk
                 chunk_id += 1

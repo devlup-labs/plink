@@ -1,8 +1,8 @@
 """
 Function Name: compress_file
 Purpose: compress a file given file/folder path
-Inputs: path
-Outputs: output_path of output_file which compressed file of file/folder of which pth is given
+Inputs: path, output_dir (path at which the compressed file will be saved)
+Outputs: output_path of output_file which compressed file of file/folder of which path is given
 
 """
 from pathlib import Path

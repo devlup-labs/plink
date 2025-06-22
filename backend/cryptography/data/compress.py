@@ -9,10 +9,10 @@ from pathlib import Path
 import zstandard as zstd
 import tarfile
 
-APP_COMPRESSED_DIR = Path("compressed_output")  # Update this path as needed
-APP_COMPRESSED_DIR.mkdir(parents=True, exist_ok=True)
-
-def compress_file(path):
+def compress_file(path,output_dir):
+    
+    APP_COMPRESSED_DIR = Path(output_dir)
+    APP_COMPRESSED_DIR.mkdir(parents=True, exist_ok=True)
     
     path = Path(path)
     cctx = zstd.ZstdCompressor(level=3)
@@ -27,7 +27,7 @@ def compress_file(path):
             
     elif path.is_dir():
         
-        # temporary tar file
+        # make temporary tar file
         
         temp_tar_path = APP_COMPRESSED_DIR / (path.name + '.tar')
         
@@ -40,7 +40,7 @@ def compress_file(path):
         with temp_tar_path.open('rb') as input_file, output_path.open('wb') as output_file:
             cctx.copy_stream(input_file, output_file)
 
-        # remove tar file
+        # delete tar file
         
         temp_tar_path.unlink()
         

@@ -1,3 +1,12 @@
+"""
+Function Name: compress_file  
+Purpose: Compress a file or folder (first archive using tarfile) using zstandard (.zst) compression.  
+Inputs:  
+    - path: Path to the file or folder to be compressed  
+    - output_dir: Directory where the compressed file will be stored  
+Outputs:  
+    - Returns the path of the compressed `.zst` file  
+"""
 from pathlib import Path
 import zstandard as zstd
 import tarfile

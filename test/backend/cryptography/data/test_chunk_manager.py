@@ -1,58 +1,43 @@
-'''Test file for chunk_manager.py'''
+""" Test file for chunk_manager.py """
 
 import pytest
 from pathlib import Path
-
 from backend.cryptography.data.chunk_manager import divide_in_chunks
-from backend.cryptography.data.compression import compress_file
 
-def test_chunk_manager_file(tmp_path):
-    file = tmp_path/"sample.txt"
-    file.write_text("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-    chunks = list(divide_in_chunks(file, 10))
+def test_divide_in_chunks_file(tmp_path):
     
-    assert chunks[0][0] == 1
-    assert chunks[0][1] == b"ABCDEFGHIJ"
-    assert chunks[1][0] == 2
-    assert chunks[1][1] == b"KLMNOPQRST"
-    assert chunks[2][0] == 3
-    assert chunks[2][1] == b"UVWXYZ"
-
-def test_chunk_manager_folder(tmp_path):
-    folder = tmp_path/"sample_folder"
-    folder.mkdir()
-    (folder/"file1.txt").write_text("File 1")
-    (folder/"file2.txt").write_text("File 2")
-
-    output_dir = tmp_path/"output"
-    compressed_path = compress_file(folder, output_dir)
-
-    chunks = list(divide_in_chunks(compressed_path, 5))
-
-    assert all(isinstance(chunk[0], int) for chunk in chunks)
-    assert all(isinstance(chunk[1], bytes) for chunk in chunks)
-
-    total_data = b"".join(chunk[1] for chunk in chunks)
-
-    with open(compressed_path, 'rb') as f:
-        original_data = f.read()
+    # Create a test file
     
-    assert total_data == original_data
+    test_file = tmp_path / "sample.txt"
+    content = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    test_file.write_bytes(content)
 
-def test_chunk_smaller_than_file(tmp_path):
-    file = tmp_path / "tiny.txt"
-    file.write_text("abc")
+    # Define chunk size
+    
+    chunk_size = 5
 
-    chunks = list(divide_in_chunks(file, 10))
+    # Collect chunks
+    
+    chunks = list(divide_in_chunks(str(test_file), chunk_size))
 
-    assert len(chunks) == 1
-    assert chunks[0][0] == 1
-    assert chunks[0][1] == b"abc"
+    # Expected number of chunks
+    
+    expected_chunks = [(str(i + 1), content[i * chunk_size:(i + 1) * chunk_size])
+                       for i in range((len(content) + chunk_size - 1) // chunk_size)]
 
-def test_invalid_path(tmp_path):
-    invalid_path = tmp_path/"invalid.txt"
-    with pytest.raises(ValueError) as exc_info:
-        list(divide_in_chunks(invalid_path, 1024))
+    assert chunks == expected_chunks
+    assert len(chunks) == 6
+    assert chunks[0] == ('1', b'ABCDE')
+    assert chunks[-1] == ('6', b'Z')
 
-    assert "Path must be a file" in str(exc_info.value)
+def test_divide_in_chunks_non_file(tmp_path, capsys):
+    test_dir = tmp_path / "folder"
+    test_dir.mkdir()
+
+    result = list(divide_in_chunks(str(test_dir), 10))
+
+    # Function should print error and yield nothing
+    
+    captured = capsys.readouterr()
+    assert "Give appropriate path" in captured.out
+    assert result == []

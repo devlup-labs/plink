@@ -1,27 +1,26 @@
 """
-Function Name: divide_in_chunks
-Purpose: divide given file/folder in chunks given path and CHUNK_SIZE
-Inputs: CHUNK_SIZE
-Outputs: yield tuple of (chunk_name : chunk_data) and chunk_name being 1,2,3…n
-
+Function Name: divide_in_chunks  
+Purpose: Divide a file into chunks of a given size and yield them one by one  
+Inputs:  
+    - path: Path to the file  
+    - CHUNK_SIZE: Size of each chunk in bytes  
+Outputs:  
+    - Yields tuples in the format (chunk_num, chunk_data)  
 """
 from pathlib import Path
 
 def divide_in_chunks(path, CHUNK_SIZE):
-    
     p = Path(path)
-    
+
     if p.is_file():
-        
-        with p.open("rb") as f:
-            chunk_id = 1
+        with open(p, 'rb') as f:
+            chunk_num = 1
             while True:
-                chunk = f.read(CHUNK_SIZE)
-                if not chunk:
+                chunk_data = f.read(CHUNK_SIZE)
+                if not chunk_data:
                     break
-                yield str(chunk_id), chunk
-                chunk_id += 1
+                yield (chunk_num, chunk_data)
+                chunk_num += 1
             
     else:
-        print("Give appropriate path")
-    
+        raise ValueError("Path must be a file")

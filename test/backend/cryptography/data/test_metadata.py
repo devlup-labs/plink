@@ -1,56 +1,36 @@
-""" Test file for test_metadata.py """
+'''Test file for metadata.py'''
 
 import pytest
 from pathlib import Path
+from math import ceil
+
 from backend.cryptography.data.metadata import retrieve_metadata
 
 def test_metadata_file(tmp_path):
-    
-    # Create a test file
-    
-    test_file = tmp_path / "test.txt"
-    content = b"A" * 1024  # 1 KB
-    test_file.write_bytes(content)
+    file = tmp_path/"sample.txt"
+    file.write_text("This is sample file for testing purpose.")
 
-    result = retrieve_metadata(test_file, CHUNK_SIZE=256)
+    CHUNK_SIZE = 16
+    result = retrieve_metadata(file, CHUNK_SIZE)
 
-    assert result["size"] == 1024
-    assert result["total_chunks"] == 4
-    
-    #################################################
-    
-    # another test with 1 kb of data and 250 bytes of chucksize so chunk should be created as 4 chunks with 250 bytes and 1 chunk with 24 bytes
-    
-    test_file = tmp_path / "test.txt"
-    content = b"A" * 1024  # 1 KB
-    test_file.write_bytes(content)
-
-    result = retrieve_metadata(test_file, CHUNK_SIZE=250)
-
-    assert result["size"] == 1024
-    assert result["total_chunks"] == 5
-    
-
+    assert result["size"] == 40
+    assert result["total_chunks"] == 3
 
 def test_metadata_folder(tmp_path):
-    
-    # Create a folder with 3 files (each 100 bytes)
-    
-    folder = tmp_path / "folder"
+    folder = tmp_path/"sample_folder"
     folder.mkdir()
-    for i in range(3):
-        (folder / f"file_{i}.bin").write_bytes(b"x" * 100)
+    (folder/"file1.txt").write_text("Sample file 1")
+    (folder/"file2.txt").write_text("Sample file 2")
 
-    result = retrieve_metadata(folder, CHUNK_SIZE=150)
+    CHUNK_SIZE = 8
+    result = retrieve_metadata(folder, CHUNK_SIZE)
 
-    # 300 bytes total → ceil(300 / 150) = 2 chunks
-    
-    assert result["size"] == 300
-    assert result["total_chunks"] == 2
+    assert result["size"] == 26
+    assert result["total_chunks"] == 4
 
+def test_invalid_path(tmp_path):
+    invalid_path = tmp_path/"invalid.txt"
+    with pytest.raises(FileNotFoundError) as exc_info:
+        retrieve_metadata(invalid_path, 1024)
 
-def test_invalid_path(capsys):
-    result = retrieve_metadata("non_existing_path", CHUNK_SIZE=512)
-    captured = capsys.readouterr()
-
-    assert "Invalid Path Provided" in captured.out
+    assert f"Path doesn't exists : {invalid_path}" in str(exc_info.value)

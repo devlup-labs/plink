@@ -1,31 +1,33 @@
 """
-Function Name: retrieve_metadata
-Purpose: Given file/folder path and CHUNK_SIZE Determine basic properties of file/folder like size and total_chunks(based on size/CHUNK_SIZE)
-Inputs: path, CHUNK_SIZE
-Outputs: size, total_chunks
-
+Function Name: retrieve_metadata  
+Purpose: Calculate size and total number of chunks required for a file or folder  
+Inputs:  
+    - path: Path to the file or folder  
+    - CHUNK_SIZE: Size of each chunk in bytes  
+Outputs:  
+    - Dictionary with keys:  
+        - "size": total size in bytes  
+        - "total_chunks": number of chunks required  
 """
-
 from pathlib import Path
-import math
+from math import ceil
 
-def retrieve_metadata(path ,CHUNK_SIZE):
-
+def retrieve_metadata(path, CHUNK_SIZE):
     p = Path(path)
+
+    if p.exists() == False:
+        raise FileNotFoundError(f"Path doesn't exists : {path}")
     
-    if p.exists():
-        if p.is_file():
-            size = p.stat().st_size
-        
-        else:
-            
-            size = sum(file.stat().st_size for file in p.rglob("*") if file.is_file())
-    
+    if p.is_file():
+        size = p.stat().st_size
+
+    elif p.is_dir():
+        size = sum(f.stat().st_size for f in p.rglob("*") if f.is_file())
+
     else:
-        print("Invalid Path Provided")
-        return None
-            
-            
-    total_chunks = math.ceil(size/CHUNK_SIZE)
+        raise ValueError(f"Unsupported path type : {path}")
     
-    return {"size": size, "total_chunks": total_chunks}
+    total_chunks = ceil(size/CHUNK_SIZE)
+
+    return {"size": size,
+            "total_chunks": total_chunks}

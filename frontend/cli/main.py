@@ -1,6 +1,10 @@
-from argument_parser import parsing_argument
-from command_handler import handle_command
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+from command_handler import get_args, handle_command
 
 if __name__ == "__main__":
-    args = parsing_argument()
+    args = get_args()
     handle_command(args)

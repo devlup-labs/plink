@@ -1,26 +1,18 @@
 import os
-from argument_parser import get_parser
-from argument_parser import parsing_argument
+import sys
 
-def arguments_dictionary():
-    parser = get_parser()
-    args = parser.parse_args()
-    
-    args_dictionary = {
-        'method': args.method,
-        'port': args.port,
-        'encryption': args.encryption,
-        'chunk_size': args.chunk_size,
-        'compress': args.compress,
-        'password': args.password,
-        'resume': args.resume,
-        'verify': args.verify,
-        'output_directory': args.output_directory,
-        'auto_accept': args.auto_accept,
-        'max_size': args.max_size
-    }
+from frontend.cli.sender.argument_parser import parsing_argument as sender_parsing_argument
+from frontend.cli.receiver.argument_parser import parsing_argument as receiver_parsing_argument
 
-    return args_dictionary
+# Get arguments using appropriate parser
+def get_args():
+    command = sys.argv[1] if len(sys.argv) > 1 else None
+    if command == "send":
+        return sender_parsing_argument()
+    elif command == "receive":
+        return receiver_parsing_argument()
+    else:
+        raise InvalidCommandError("Unknown command. Use 'send' or 'receive'")
 
 '''
 Function name: handle_command
@@ -28,8 +20,6 @@ Purpose: To handle the command line arguments for sending or receiving files.
 Input: Parsed arguments as an object.
 Output: None, but prints the command and its parameters.
 '''
-
-
 
 # Exceptions Class
 class InvalidCommandError(Exception):

@@ -6,9 +6,11 @@ Output: Parsed arguments as an object.
 '''
 
 import argparse
+from utils import log, LogType
 
-def parsing_argument() :
+def parsing_argument(general_logfile_path) :
     
+    log("Perparing to parse arguments...", log_type=LogType.DEBUG, status="Initiated", general_logfile_path=general_logfile_path)
     #creating a parser
     parser=argparse.ArgumentParser("plink")
 
@@ -24,7 +26,13 @@ def parsing_argument() :
     receive_parser.add_argument("--auto-accept", help = "Automatically accept transfers",action="store_true")
     receive_parser.add_argument("--max-size", help = "Maximum file size to accept (MB)", type=int, default=1)
 
-    args=parser.parse_args()
+    log("Argument parsing started", log_type=LogType.INFO, status="Started", general_logfile_path=general_logfile_path)
+    try:
+        args = parser.parse_args()
+        log(f"Parsed arguments: {vars(args)}", log_type=LogType.INFO, status="Success", general_logfile_path=general_logfile_path)
+    except SystemExit:
+        log("Argument parsing failed", log_type=LogType.ERROR, status="Failure", general_logfile_path=general_logfile_path)
+        raise
 
     return args
 

@@ -6,9 +6,11 @@ Output: Parsed arguments as an object.
 '''
 
 import argparse
+from utils import log, LogType
 
-def parsing_argument() :
+def parsing_argument(general_logfile_path) :
     
+    log("Preparing to parse arguments...", log_type=LogType.DEBUG, status="Initiated", general_logfile_path=general_logfile_path)
     #creating a parser
     parser=argparse.ArgumentParser("plink")
 
@@ -28,6 +30,12 @@ def parsing_argument() :
     send_parser.add_argument("--resume", help = "Resume interrupted transfer",action="store_true")
     send_parser.add_argument("--verify", help = "Verify file integrity after transfer", action="store_true")
 
-    args=parser.parse_args()
+    log("Argument parsing started", log_type=LogType.INFO, status="Started", general_logfile_path=general_logfile_path)
+    try:
+        args = parser.parse_args()
+        log(f"Parsed arguments: {vars(args)}", log_type=LogType.INFO, status="Success", general_logfile_path=general_logfile_path)
+    except SystemExit:
+        log("Argument parsing failed", log_type=LogType.ERROR, status="Failure", general_logfile_path=general_logfile_path)
+        raise
 
     return args

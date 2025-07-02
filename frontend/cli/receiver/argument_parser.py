@@ -6,10 +6,10 @@ Output: Parsed arguments as an object.
 '''
 
 import argparse
-from utils import log, LogType
+from utils.logging import log, LogType
 
 def parsing_argument(general_logfile_path) :
-    
+
     log("Perparing to parse arguments...", log_type=LogType.DEBUG, status="Initiated", general_logfile_path=general_logfile_path)
     #creating a parser
     parser=argparse.ArgumentParser("plink")
@@ -20,10 +20,8 @@ def parsing_argument(general_logfile_path) :
     #creating subparser for receive and giving optional arguments
     receive_parser=subparsers.add_parser("receive", help="give command of receive")
     receive_parser.add_argument("--output-dir", "-o", help = "Output directory (default: current directory)", default=".")
-    receive_parser.add_argument("--port", "-p", help = "Port number (default: 8080)", default=8080, type=int)
     receive_parser.add_argument("--method", "-m", help = "Preferred connection method")
     receive_parser.add_argument("--password", help  = "Transfer password")
-    receive_parser.add_argument("--auto-accept", help = "Automatically accept transfers",action="store_true")
     receive_parser.add_argument("--max-size", help = "Maximum file size to accept (MB)", type=int, default=1)
 
     log("Argument parsing started", log_type=LogType.INFO, status="Started", general_logfile_path=general_logfile_path)
@@ -35,4 +33,3 @@ def parsing_argument(general_logfile_path) :
         raise
 
     return args
-

@@ -1,49 +1,72 @@
-"""
-Function Name: compress_file  
-Purpose: Compress a file or folder (first archive using tarfile) using zstandard (.zst) compression.  
-Inputs:  
-    - path: Path to the file or folder to be compressed  
-    - output_dir: Directory where the compressed file will be stored  
-Outputs:  
-    - Returns the path of the compressed `.zst` file  
-"""
-from pathlib import Path
+import os
 import zstandard as zstd
 import tarfile
+import shutil
 
-def compress_file(path, output_dir):
-    p = Path(path)
-    APP_COMPRESSED_DIR = Path(output_dir)
-    APP_COMPRESSED_DIR.mkdir(parents=True, exist_ok=True)
+from utils.logging import LogType, log
 
-    if not (p.is_file() or p.is_dir()):
-        raise ValueError("Unsupported path type")
+def decompress_final_chunk(final_chunk_file_path, output_dir, general_logfile_path):
 
-    tar_path = None
+    os.makedirs(output_dir, exist_ok=True)
+    tar_file_path = os.path.splitext(final_chunk_file_path)[0] + '.tar'
 
-    if p.is_dir():
-        tar_path = APP_COMPRESSED_DIR/(p.name + ".tar")
-        with tarfile.open(tar_path, 'w') as tar:
-            tar.add(p, arcname=p.name)
-        p = tar_path
+    # Decompress .zstd to .tar
+    try:
+        with open(final_chunk_file_path, 'rb') as compressed_file, open(tar_file_path, 'wb') as tar_file:
+            dctx = zstd.ZstdDecompressor()
+            dctx.copy_stream(compressed_file, tar_file)
+    except Exception as e:
+        log(
+            f"Error decompressing .zstd file : {e}",
+            LogType.ERROR,
+            "Failure",
+            general_logfile_path,
+            True
+        )
+        return
 
-    compressed_path = APP_COMPRESSED_DIR/(p.name + ".zst")
+    # Delete the .zstd file after successful decompression
+    try:
+        os.remove(final_chunk_file_path)
+    except OSError as e:
+        log(
+            f"Error deleting .zstd file: {e}",
+            LogType.ERROR,
+            "Failure",
+            general_logfile_path,
+            True
+        )
 
-    cctx = zstd.ZstdCompressor()
-    with open(p, 'rb') as infile, open(compressed_path, 'wb') as outfile:
-        cctx.copy_stream(infile, outfile)
+    # Extract .tar file
+    try:
+        with tarfile.open(tar_file_path, 'r') as tar:
+            tar.extractall(path=output_dir)
+    except Exception as e:
+        log(
+            f"Error extracting .tar file: {e}",
+            LogType.ERROR,
+            "Failure",
+            general_logfile_path,
+            True
+        )
+        return
 
-    if tar_path and tar_path.exists():
-        tar_path.unlink()
+    # Delete the .tar file after extraction
+    try:
+        os.remove(tar_file_path)
+    except OSError as e:
+        log(
+            f"Error deleting .tar file: {e}",
+            LogType.ERROR,
+            "Failure",
+            general_logfile_path,
+            True
+        )
 
-    return compressed_path
-
-def decompress_final_chunk(final_chunk_file_path,output_path, general_logfile_path) :
-    
-    with open(final_chunk_file_path,'rb') as chunk_file, open(output_path,'wb') as final_file :
-        dcomp = zstd.ZstdDecompressor()
-        dcomp.copy_stream(chunk_file,final_file)
-
-
-
-
+    log(
+        f"Decompression and extraction complete. Output at: {output_dir}",
+        LogType.INFO,
+        "Success",
+        general_logfile_path,
+        True
+    )

@@ -64,7 +64,7 @@ plink/
     │   ├── argument_parser.py
     │   ├── command_handler.py
     │   └── output_formatter.py
-    │  
+    │
     └── config/
         ├── __init__.py
         ├── settings.py
@@ -110,14 +110,11 @@ plink send <file_path> [OPTIONS]
 
 OPTIONS:
   --method, -m          Connection method (direct, upnp, hole-punch, role-reverse)
-  --port, -p           Port number (default: 8080)
   --encryption, -e     Encryption method (aes256, chacha20)
   --chunk-size, -c     Chunk size in KB (default: 1024)
-  --compress           Enable compression
   --password           Set transfer password
   --timeout            Connection timeout in seconds
   --resume             Resume interrupted transfer
-  --verify             Verify file integrity after transfer
 ```
 
 ### Receiver Commands
@@ -127,10 +124,8 @@ plink receive [OPTIONS]
 
 OPTIONS:
   --output-dir, -o     Output directory (default: current directory)
-  --port, -p           Port number (default: 8080)
   --method, -m         Preferred connection method
   --password           Transfer password
-  --auto-accept        Automatically accept transfers
   --max-size           Maximum file size to accept (MB)
 ```
 

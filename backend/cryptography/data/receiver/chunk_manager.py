@@ -1,7 +1,7 @@
 import os
 import json
 from datetime import datetime
-from logging import Logtype, log
+from utils.logging import Logtype, log
 
 
 def collect_chunks(chunk_logfile_path, general_logfile_path, chunk_data, chunk_output_dir, chunk_name):

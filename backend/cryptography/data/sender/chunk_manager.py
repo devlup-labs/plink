@@ -9,7 +9,7 @@ Inputs:
 Outputs:
     - Yields tuples in the format (chunk_num, chunk_data)
 """
-from logging import log, LogType 
+from utils.logging import log, LogType
 from pathlib import Path
 
 def yield_chunks(path, CHUNK_SIZE, general_logfile_path, offset=0) :

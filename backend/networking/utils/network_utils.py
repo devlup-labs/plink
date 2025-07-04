@@ -76,3 +76,11 @@ def is_UPnP_present():
     except Exception as e:
         print(f"UPnP detection failed: {e}")
         return False
+
+# if _name_ == "_main_":
+#     nat_present = detect_nat()
+#     upnp_available = detect_upnp()
+    
+#     print(f"\n=== Summary ===")
+#     print(f"NAT detected: {nat_present}")
+#     print(f"UPnP available: {upnp_available}")

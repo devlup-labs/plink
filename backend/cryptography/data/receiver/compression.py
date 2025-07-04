@@ -1,7 +1,6 @@
 import os
 import zstandard as zstd
 import tarfile
-import shutil
 
 from utils.logging import LogType, log
 

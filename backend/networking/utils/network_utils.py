@@ -1,7 +1,7 @@
 import socket
 import requests
 
-def detect_nat():
+def is_NAT_present():
     """Detect NAT presence and type using IP comparison and STUN."""
     print("=== NAT Detection ===")
     
@@ -41,7 +41,7 @@ def detect_nat():
     
     return nat_detected
 
-def detect_upnp():
+def is_UPnP_present():
     """Detect UPnP availability and capabilities."""
     print("\n=== UPnP Detection ===")
     

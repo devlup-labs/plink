@@ -4,11 +4,11 @@ from datetime import datetime
 from utils.logging import LogType, log
 
 
-def collect_chunks(chunk_logfile_path, general_logfile_path, chunk_data, chunk_output_dir, chunk_name):
+def collect_chunks(chunk_logfile_path, general_logfile_path, chunk_data, chunk_output_dir, chunk_num):
     try:
         os.makedirs(chunk_output_dir, exist_ok=True)
+        chunk_name = f"chunk_{chunk_num}"
         chunk_path = os.path.join(chunk_output_dir, f"{chunk_name}.pchunk")
-
         with open(chunk_path, 'wb') as f:
             f.write(chunk_data)
         #log for saved chunk
@@ -29,7 +29,8 @@ def collect_chunks(chunk_logfile_path, general_logfile_path, chunk_data, chunk_o
                     #log for invalid JSON and starting over
                     log("Invalid JSON in chunk log file, starting over.", log_type=LogType.ERROR, status="Failure", general_logfile_path=general_logfile_path)
                     pass
-
+        if 'chunk_output_dir' not in existing_data:
+            existing_data['chunk_output_dir'] = chunk_output_dir
         existing_data.update(new_entry)
         with open(chunk_logfile_path, 'w') as f:
             json.dump(existing_data, f, indent=2)
@@ -55,22 +56,37 @@ def join_chunks(chunk_output_dir, chunk_logfile_path,general_logfile_path):
 
         if not isinstance(chunk_info, dict):
             raise ValueError("Chunk log file does not contain a valid dictionary.")
+        
+        output_dir = chunk_info.get("chunk_output_dir")
 
-        chunks = sorted(chunk_info.items(), key=lambda x: x[0])
+        # chunks = sorted(chunk_info.items(), key=lambda x: x[0])
         final_file_path = os.path.join(chunk_output_dir, 'final_file.zstd')
-
+        num = 1
+        attempt = 3
         with open(final_file_path, 'wb') as final_file:
-            for chunk_name, info in chunks:
-                chunk_path = info.get('path')
-                if not chunk_path or not os.path.exists(chunk_path):
+            while(os.path.exists(os.path.join(output_dir, f"chunk_{num}.pchunk"))):
+                chunk_path = os.path.join(output_dir, f"chunk_{num}.pchunk")
+                if not os.path.exists(chunk_path):
                     #log for missing chunk
-                    log(f"Chunk file {chunk_path} not found for chunk {chunk_name}", log_type=LogType.ERROR, status="Failure", general_logfile_path=general_logfile_path)
-                    continue
+                    log(f"Stopping finding further chunks", log_type=LogType.ERROR, status="Failure", general_logfile_path=general_logfile_path)
+                    break
                 with open(chunk_path, 'rb') as chunk_file:
                     final_file.write(chunk_file.read())
                 os.remove(chunk_path)
                 #log for successfully added chunk
-                log(f"Chunk {chunk_name} added to final file {final_file_path}", log_type=LogType.INFO, status="Success", general_logfile_path=general_logfile_path)
+                log(f"Chunk chunk_{num} added to final file {final_file_path}", log_type=LogType.INFO, status="Success", general_logfile_path=general_logfile_path)
+                num += 1
+            # for chunk_name, info in chunks:
+            #     chunk_path = info.get('path')
+            #     if not chunk_path or not os.path.exists(chunk_path):
+            #         #log for missing chunk
+            #         log(f"Chunk file {chunk_path} not found for chunk {chunk_name}", log_type=LogType.ERROR, status="Failure", general_logfile_path=general_logfile_path)
+            #         continue
+            #     with open(chunk_path, 'rb') as chunk_file:
+            #         final_file.write(chunk_file.read())
+            #     os.remove(chunk_path)
+            #     #log for successfully added chunk
+            #     log(f"Chunk {chunk_name} added to final file {final_file_path}", log_type=LogType.INFO, status="Success", general_logfile_path=general_logfile_path)
 
 
         #log for successfully joined chunks

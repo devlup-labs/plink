@@ -1,5 +1,6 @@
 import os
 import timeit
+import time
 
 # Stress test for various components of the backend
 # Full file transfer stress test is at the bottom of the file
@@ -154,55 +155,74 @@ def generate_test_file(size_in_kb):
 
 #--------------------------------------------------------------------------------------------
 
-# #full file transfer test
+#full file transfer test
 
-# from backend.cryptography.data.sender.chunk_manager import yield_chunks
-# from backend.cryptography.data.receiver.chunk_manager import collect_chunks, join_chunks
-# from backend.cryptography.data.sender.compression import compress_file
-# from backend.cryptography.data.receiver.compression import decompress_final_chunk
-# from backend.cryptography.core.cipher import encryption, decryption
+from backend.cryptography.data.sender.chunk_manager import yield_chunks
+from backend.cryptography.data.receiver.chunk_manager import collect_chunks, join_chunks
+from backend.cryptography.data.sender.compression import compress_file
+from backend.cryptography.data.receiver.compression import decompress_final_chunk
+from backend.cryptography.core.cipher import encryption, decryption
 
-# def setup_env():
-#     # Create a temporary directory for the test
-#     if not os.path.exists("compressed_files"):
-#         os.makedirs("compressed_files")
-#     if not os.path.exists("decompressed_files"):
-#         os.makedirs("decompressed_files")
-#     # Clear previous files if they exist
-#     for file in os.listdir("compressed_files"):
-#         os.remove(os.path.join("compressed_files", file))
-#     for file in os.listdir("decompressed_files"):
-#         os.remove(os.path.join("decompressed_files", file))
-    
-# def stress_test_full_file_transfer():
-#     compressed_path = compress_file("test.pdf", "compressed_files", "test_log.txt")
-#     chunks = yield_chunks(compressed_path, 8192, "test_log.txt", 0)
-#     for chunk_num, chunk_data in chunks:
-#         with open(f"compressed_files/chunk_{chunk_num}.pchunk", "wb") as file:
-#             file.write(chunk_data)
-#         file.close()
-#     #now sending files to receiver
+generate_test_file(1024 * 5)  # Generate a test file of 1 MB size
 
-#     for file in os.listdir("compressed_files"):
-#         if file.endswith(".pchunk"):
-#             with open(os.path.join("compressed_files", file), "rb") as f:
-#                 chunk_data = f.read()
-#             collect_chunks("chunk_log.json", "test_log.txt", chunk_data, "decompressed_files", int(file.split('_')[1].split('.')[0]))
-#     for files in os.listdir("compressed_files"):
-#         os.remove(os.path.join("compressed_files", files))
-#     # Join all chunks into a final file
-#     final_file_path = join_chunks("decompressed_files", "chunk_log.json", "test_log.txt")
-#     # Decompress the final file
-#     decompress_final_chunk(final_file_path, "decompressed_files", "test_log.txt")
+def setup_env():
+    # Create a temporary directory for the test
+    if not os.path.exists("compressed_files"):
+        os.makedirs("compressed_files")
+    if not os.path.exists("decompressed_files"):
+        os.makedirs("decompressed_files")
+    # Clear previous files if they exist
+    for file in os.listdir("compressed_files"):
+        os.remove(os.path.join("compressed_files", file))
+    for file in os.listdir("decompressed_files"):
+        os.remove(os.path.join("decompressed_files", file))
 
-# full_time = 0
-# print("Starting full file transfer stress test...")
-# # Run the full file transfer stress test
-# for _ in range(10):  # Run multiple times to get average
-#     setup_env()  # Ensure a clean environment for each run
-#     full_time += timeit.timeit(stress_test_full_file_transfer, number=1)
-#     print("completed successfully run ", _ + 1)
-# # setup_env()  # Ensure a clean environment for each run
-# print(f"Average time for full file transfer (compression, chunking, transfer, decompression): {full_time / 10:.6f} seconds")
+
+def stress_test_full_file_transfer():
+    times1 = time.perf_counter()
+    compressed_path = compress_file("test.pdf", "compressed_files", "test_log.txt")
+    times2 = time.perf_counter()
+    chunks = yield_chunks(compressed_path, 8192, "test_log.txt", 0)
+    times3 = time.perf_counter()
+    for chunk_num, chunk_data in chunks:
+        with open(f"compressed_files/chunk_{chunk_num}.pchunk", "wb") as file:
+            file.write(chunk_data)
+        file.close()
+    #now sending files to receiver
+    times4 = time.perf_counter()
+    for file in os.listdir("compressed_files"):
+        if file.endswith(".pchunk"):
+            with open(os.path.join("compressed_files", file), "rb") as f:
+                chunk_data = f.read()
+            collect_chunks("chunk_log.json", "test_log.txt", chunk_data, "decompressed_files", int(file.split('_')[1].split('.')[0]))
+    times5 = time.perf_counter()
+    for files in os.listdir("compressed_files"):
+        os.remove(os.path.join("compressed_files", files))
+    times6 = time.perf_counter()
+    # Join all chunks into a final file
+    final_file_path = join_chunks("decompressed_files", "chunk_log.json", "test_log.txt")
+    times7 = time.perf_counter()
+    # Decompress the final file
+    decompress_final_chunk(final_file_path, "decompressed_files", "test_log.txt")
+    times8 = time.perf_counter()
+    print(f"Full file transfer completed in {times8 - times1:.6f} seconds")
+    print(f"Compression time: {times2 - times1:.6f} seconds")
+    print(f"Yield time: {times3 - times2:.6f} seconds")
+    print(f"Writing chunks time: {times4 - times3:.6f} seconds")
+    print(f"Collecting chunks time: {times5 - times4:.6f} seconds")
+    print(f"removing chunks time: {times6 - times5:.6f} seconds")
+    print(f"Joining chunks time: {times7 - times6:.6f} seconds")
+    print(f"Decompression time: {times8 - times7:.6f} seconds")
+    print(f"Decompression time: {times8 - times7:.6f} seconds")
+
+full_time = 0
+print("Starting full file transfer stress test...")
+# Run the full file transfer stress test
+for _ in range(50):  # Run multiple times to get average
+    setup_env()  # Ensure a clean environment for each run
+    stress_test_full_file_transfer()
+    print("completed successfully run ", _ + 1)
+# setup_env()  # Ensure a clean environment for each run
+print(f"Average time for full file transfer (compression, chunking, transfer, decompression): {full_time / 10:.6f} seconds")
 
 # --------------------------------------------------------------------------------------------

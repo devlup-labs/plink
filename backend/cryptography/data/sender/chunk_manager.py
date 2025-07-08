@@ -28,5 +28,5 @@ def yield_chunks(path, CHUNK_SIZE, general_logfile_path, offset=0) :
                 chunk_num += 1
                 log(f"Yielded chunk {chunk_num} of size {len(chunk_data)} bytes", log_type=LogType.INFO, status="Success", general_logfile_path=general_logfile_path)
     else:
-        raise ValueError("Path must be a file")
         log(f"Path {path} is not a valid file", log_type=LogType.ERROR, status="Failure", general_logfile_path=general_logfile_path)
+        raise ValueError("Path must be a file")

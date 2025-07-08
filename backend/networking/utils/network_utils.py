@@ -1,19 +1,22 @@
 import socket
 import requests
+from utils.logging import LogType, log
 
-def is_NAT_present():
+
+def is_NAT_present(general_logfile_path):
     """Detect NAT presence and type using IP comparison and STUN."""
-    print("=== NAT Detection ===")
-    
+    log("Starting NAT detection", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
     # Get local IP
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
         local_ip = s.getsockname()[0]
+        log(f"Local IP detected: {local_ip}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
         s.close()
     except Exception as e:
         local_ip = f"Error: {e}"
         print(f"Local IP: {local_ip}")
+        log(f"Local IP detection failed: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
         return False
     
     # Get public IP
@@ -21,60 +24,59 @@ def is_NAT_present():
         public_ip = requests.get("https://api.ipify.org").text.strip()
     except Exception as e:
         public_ip = f"Error: {e}"
-        print(f"Public IP: {public_ip}")
+        log(f"Public IP detection failed: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
         return False
     
-    print(f"Local IP: {local_ip}")
-    print(f"Public IP: {public_ip}")
+    log(f"Public IP detected: {public_ip}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
+
     
     nat_detected = local_ip != public_ip
-    print("NAT Status:", "NAT is present" if nat_detected else "No NAT detected")
+    log(f"NAT detected: {nat_detected}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
     
     # STUN NAT type detection
-    print("\n-- STUN NAT Type Detection --")
+    log("Starting STUN NAT type detection", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
     try:
         import stun
         nat_type, external_ip, external_port = stun.get_ip_info()
-        print(f"NAT Type: {nat_type}, Public IP via STUN: {external_ip}, Port: {external_port}")
+        log(f"STUN detected NAT type: {nat_type}, External IP: {external_ip}, External Port: {external_port}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
     except Exception as e:
-        print(f"STUN detection failed: {e}")
+        log(f"STUN detection failed: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
     
     return nat_detected
 
-def is_UPnP_present():
+def is_UPnP_present(general_logfile_path):
     """Detect UPnP availability and capabilities."""
-    print("\n=== UPnP Detection ===")
+    log("Starting UPnP detection", log_type=LogType.INFO, status="Success" , general_logfile_path = general_logfile_path)
     
     try:
         import miniupnpc
         upnp = miniupnpc.UPnP()
         upnp.discoverdelay = 200
-        
-        print("Discovering UPnP devices...")
+        log("Discovering UPnP devices...", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
         ndevices = upnp.discover()
         if ndevices == 0:
-            print("UPnP not available (no devices discovered)")
+            log("No UPnP devices found", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
             return False
         
-        print(f"{ndevices} UPnP devices discovered.")
+        log(f"UPnP devices found: {ndevices}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
         
         try:
             upnp.selectigd()
         except Exception as e:
-            print(f"UPnP IGD selection failed: {e}")
+            log(f"Failed to select UPnP IGD: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
             return False
         
         # Test if we can get the external IP
         try:
             external_ip = upnp.externalipaddress()
-            print(f"UPnP is available\nExternal IP (UPnP): {external_ip}")
+            log(f"UPnP External IP: {external_ip}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
             return True
         except Exception as e:
-            print(f"UPnP available, but failed to get external IP: {e}")
+            log(f"Failed to get UPnP external IP: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
             return False
             
     except Exception as e:
-        print(f"UPnP detection failed: {e}")
+        log(f"UPnP detection failed: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
         return False
 
 # if _name_ == "_main_":

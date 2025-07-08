@@ -28,7 +28,7 @@ Argumnets:
     print_log (bool) : Prints the log line if true.
 """
 
-def log(message, log_type=LogType.INFO, status="Success", general_logfile_path="app.log",print_log = True):
+def log(message, log_type=LogType.INFO, status="Success", general_logfile_path="app.log",print_log = False):
     if not isinstance(log_type, LogType):
         raise ValueError(f"log_type must be an instance of LogType Enum, got {type(log_type)}")
 

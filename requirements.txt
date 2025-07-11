@@ -27,3 +27,4 @@ requests==2.32.4
 urllib3==2.5.0
 Werkzeug==1.0.0
 zstandard==0.23.0
+zstandard==0.23.0

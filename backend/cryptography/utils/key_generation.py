@@ -22,4 +22,9 @@ def GenKey():
         encryption_algorithm=serialization.NoEncryption()
     )
 
-    return private_pem.decode('utf-8')
+    publlic_pem = private_key.public_key().public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+
+    return private_pem.decode(), publlic_pem.decode()

@@ -12,7 +12,7 @@ def GenKey():
     # Generate RSA private key
     private_key = rsa.generate_private_key(
         public_exponent=65537,
-        key_size=2048  # You can use 4096 for higher security
+        key_size=4096  # You can use 4096 for higher security
     )
 
     # Convert private key to PEM format (string)

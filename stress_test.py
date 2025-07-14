@@ -16,7 +16,7 @@ def generate_test_file(size_in_kb):
 
 # # Chunking stress test
 
-# from backend.cryptography.data.receiver.chunk_manager import collect_chunks, join_chunks
+# from backend.cryptography.data.receiver.chunk_manager import collect_chunks_parallel, join_chunks
 
 # # Setup
 # output_dir = "stress_chunks"
@@ -33,29 +33,37 @@ def generate_test_file(size_in_kb):
 #         os.remove(os.path.join(output_dir, f))
 
 # # Wrapper to collect all chunks
-# def run_collect_chunks():
+# def run_collect_chunks_parallel():
 #     setup_env()
+#     chunk_list = []
 #     j = 0
 #     for i in range(0, len(original_data), chunk_size):
-#         chunk = original_data[i:i+chunk_size]
-#         collect_chunks(chunk_log_path, general_log_path, chunk, output_dir,j)
+#         chunk = original_data[i:i + chunk_size]
+#         chunk_list.append((chunk, j))
 #         j += 1
+    
+#     collect_chunks_parallel(chunk_list, chunk_log_path, general_log_path, output_dir)
+
 
 # # Wrapper to only join (requires data already chunked)
 # def run_join_chunks():
-#     join_chunks(output_dir, chunk_log_path, general_log_path)
+#     join_chunks(output_dir, chunk_log_path, general_log_path, chunk_size=8192, batch_size=100)
 
 # # Run timeit
+# def main():
+#     collect_time = 0
+#     join_time = 0
 
-# collect_time = 0
-# join_time = 0
+#     for _ in range(10):  # Run multiple times to get average
+#         collect_time += timeit.timeit(run_collect_chunks_parallel, number=1)
+#         join_time += timeit.timeit(run_join_chunks, number=1)
 
-# for _ in range(10):  # Run multiple times to get average
-#     collect_time += timeit.timeit(run_collect_chunks, number=1)
-#     join_time += timeit.timeit(run_join_chunks, number=1)
+#     print(f"Average time to collect chunks (5MB, 8KB/chunk): {collect_time / 10:.6f} seconds")
+#     print(f"Average time to join chunks             : {join_time / 10:.6f} seconds")
 
-# print(f"Average time to collect chunks (5MB, 8KB/chunk): {collect_time / 10:.6f} seconds")
-# print(f"Average time to join chunks             : {join_time / 10:.6f} seconds")
+# if __name__ == "__main__":
+#     import timeit
+#     main()
 # --------------------------------------------------------------------------------------------
 
 # # Chunking stress test
@@ -158,7 +166,7 @@ def generate_test_file(size_in_kb):
 #full file transfer test
 
 from backend.cryptography.data.sender.chunk_manager import yield_chunks
-from backend.cryptography.data.receiver.chunk_manager import collect_chunks, join_chunks
+from backend.cryptography.data.receiver.chunk_manager import collect_chunks_parallel, join_chunks
 from backend.cryptography.data.sender.compression import compress_file
 from backend.cryptography.data.receiver.compression import decompress_final_chunk
 from backend.cryptography.core.cipher import encryption, decryption
@@ -184,23 +192,20 @@ def stress_test_full_file_transfer():
     times2 = time.perf_counter()
     chunks = yield_chunks(compressed_path, 8192, "test_log.txt", 0)
     times3 = time.perf_counter()
+    chunk_list = []
     for chunk_num, chunk_data in chunks:
         with open(f"compressed_files/chunk_{chunk_num}.pchunk", "wb") as file:
             file.write(chunk_data)
-        file.close()
-    #now sending files to receiver
+        chunk_list.append((chunk_data, chunk_num))
     times4 = time.perf_counter()
-    for file in os.listdir("compressed_files"):
-        if file.endswith(".pchunk"):
-            with open(os.path.join("compressed_files", file), "rb") as f:
-                chunk_data = f.read()
-            collect_chunks("chunk_log.json", "test_log.txt", chunk_data, "decompressed_files", int(file.split('_')[1].split('.')[0]))
+
+    collect_chunks_parallel(chunk_list, "chunk_log.json", "test_log.txt", "decompressed_files")
     times5 = time.perf_counter()
     for files in os.listdir("compressed_files"):
         os.remove(os.path.join("compressed_files", files))
     times6 = time.perf_counter()
     # Join all chunks into a final file
-    final_file_path = join_chunks("decompressed_files", "chunk_log.json", "test_log.txt")
+    final_file_path = join_chunks("decompressed_files", "chunk_log.json", "test_log.txt", chunk_size=8192, batch_size=100)
     times7 = time.perf_counter()
     # Decompress the final file
     decompress_final_chunk(final_file_path, "decompressed_files", "test_log.txt")
@@ -215,14 +220,18 @@ def stress_test_full_file_transfer():
     print(f"Decompression time: {times8 - times7:.6f} seconds")
     print(f"Decompression time: {times8 - times7:.6f} seconds")
 
-full_time = 0
-print("Starting full file transfer stress test...")
-# Run the full file transfer stress test
-for _ in range(50):  # Run multiple times to get average
-    setup_env()  # Ensure a clean environment for each run
-    stress_test_full_file_transfer()
-    print("completed successfully run ", _ + 1)
-# setup_env()  # Ensure a clean environment for each run
-print(f"Average time for full file transfer (compression, chunking, transfer, decompression): {full_time / 10:.6f} seconds")
+def main():
+    full_time = 0
+    print("Starting full file transfer stress test...")
+    # Run the full file transfer stress test
+    for _ in range(50):  # Run multiple times to get average
+        setup_env()  # Ensure a clean environment for each run
+        stress_test_full_file_transfer()
+        print("completed successfully run ", _ + 1)
+    # setup_env()  # Ensure a clean environment for each run
+    print(f"Average time for full file transfer (compression, chunking, transfer, decompression): {full_time / 10:.6f} seconds")
 
+if __name__ == "__main__":
+    import timeit
+    main()
 # --------------------------------------------------------------------------------------------

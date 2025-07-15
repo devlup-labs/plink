@@ -1,8 +1,11 @@
 import os
 import json
 from datetime import datetime
+from multiprocessing import Pool
+import threading
+from queue import Queue
+from math import ceil
 from utils.logging import LogType, log
-
 
 def collect_chunks(chunk_logfile_path, general_logfile_path, chunk_data, chunk_output_dir, chunk_num):
     try:
@@ -41,41 +44,67 @@ def collect_chunks(chunk_logfile_path, general_logfile_path, chunk_data, chunk_o
         log(f"Error collecting chunk {chunk_name}: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path=general_logfile_path)
         raise
 
-def join_chunks(chunk_output_dir, chunk_logfile_path,general_logfile_path):
-    try:
-        if not os.path.exists(chunk_logfile_path):
-            raise FileNotFoundError(f"Log file not found: {chunk_logfile_path}")
+def collect_chunks_wrapper(args):
+    collect_chunks(*args)
 
+def collect_chunks_parallel(chunk_list, chunk_logfile_path, general_logfile_path, chunk_output_dir):
+    log("Parallel chunk collection initiated", LogType.INFO, "Started", general_logfile_path)
+
+    tasks = []
+    for chunk_data, chunk_num in chunk_list:
+        tasks.append((chunk_logfile_path, general_logfile_path, chunk_data, chunk_output_dir, chunk_num))
+
+    with Pool(processes=4) as pool:
+        pool.map(collect_chunks_wrapper, tasks)
+
+    log("Parallel chunk collection completed", LogType.INFO, "Success", general_logfile_path)
+
+def read_chunk_batch(batch_nums, output_dir, chunk_size, queue):
+    for num in batch_nums:
+        chunk_path = os.path.join(output_dir, f"chunk_{num}.pchunk")
+        if os.path.exists(chunk_path):
+            with open(chunk_path, 'rb') as f:
+                data = f.read()
+            os.remove(chunk_path)
+            offset = (num - 1) * chunk_size
+            queue.put((offset, data))
+
+def join_chunks(chunk_output_dir, chunk_logfile_path,general_logfile_path, chunk_size=8192, batch_size=100):
+    try:
         with open(chunk_logfile_path, 'r') as log_file:
             try:
                 chunk_info = json.load(log_file)
             except json.JSONDecodeError as e:
-                #log(LogType.ERROR, f"Invalid JSON in chunk log file: {e}", None)
                 log(f"Invalid JSON in chunk log file: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path=general_logfile_path)
                 raise
-
-        if not isinstance(chunk_info, dict):
-            raise ValueError("Chunk log file does not contain a valid dictionary.")
         
         output_dir = chunk_info.get("chunk_output_dir")
-
-        # chunks = sorted(chunk_info.items(), key=lambda x: x[0])
         final_file_path = os.path.join(chunk_output_dir, 'final_file.zstd')
+        chunk_nums = []
         num = 1
-        attempt = 3
+        while os.path.exists(os.path.join(output_dir, f"chunk_{num}.pchunk")):
+            chunk_nums.append(num)
+            num += 1
+
+        queue = Queue()
+        threads = []
+
+        for i in range(0, len(chunk_nums), batch_size):
+            batch = chunk_nums[i:i + batch_size]
+            t = threading.Thread(target=read_chunk_batch, args=(batch, output_dir, chunk_size, queue))
+            threads.append(t)
+            t.start()
+
+        for t in threads:
+            t.join()
+
         with open(final_file_path, 'wb') as final_file:
-            while(os.path.exists(os.path.join(output_dir, f"chunk_{num}.pchunk"))):
-                chunk_path = os.path.join(output_dir, f"chunk_{num}.pchunk")
-                if not os.path.exists(chunk_path):
-                    #log for missing chunk
-                    log(f"Stopping finding further chunks", log_type=LogType.ERROR, status="Failure", general_logfile_path=general_logfile_path)
-                    break
-                with open(chunk_path, 'rb') as chunk_file:
-                    final_file.write(chunk_file.read())
-                os.remove(chunk_path)
-                #log for successfully added chunk
-                log(f"Chunk chunk_{num} added to final file {final_file_path}", log_type=LogType.INFO, status="Success", general_logfile_path=general_logfile_path)
-                num += 1
+            data_list = []
+            while not queue.empty():
+                data_list.append(queue.get())
+            for offset, data in sorted(data_list):  # Sort to maintain order
+                final_file.seek(offset)
+                final_file.write(data)
             # for chunk_name, info in chunks:
             #     chunk_path = info.get('path')
             #     if not chunk_path or not os.path.exists(chunk_path):
@@ -88,15 +117,9 @@ def join_chunks(chunk_output_dir, chunk_logfile_path,general_logfile_path):
             #     #log for successfully added chunk
             #     log(f"Chunk {chunk_name} added to final file {final_file_path}", log_type=LogType.INFO, status="Success", general_logfile_path=general_logfile_path)
 
-
-        #log for successfully joined chunks
         log(f"All chunks successfully joined into {final_file_path}", log_type=LogType.INFO, status="Success", general_logfile_path=general_logfile_path)
-
-
-        #log for successfully joined chunks
         return final_file_path
 
     except Exception as e:
-        #log for error in join_chunks
         log(f"Error joining chunks: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path=general_logfile_path)
         raise

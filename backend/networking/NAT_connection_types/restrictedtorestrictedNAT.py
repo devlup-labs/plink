@@ -25,7 +25,7 @@ class RestrictedToRestrictedNAT:
         self.peer_port = peer_info["open_ports"][0]
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind(('', self.public_port))  # bind to selected open port
+        self.sock.bind(('', self.public_port)) 
 
         print(f"[Init] Listening for connection on {self.public_ip}:{self.public_port}")
         print(f"[Init] Targeting peer at {self.peer_ip}:{self.peer_port}")
@@ -77,7 +77,7 @@ class RestrictedToRestrictedNAT:
         self._start_punching()
 
         print(f"[Recv] Waiting for incoming data. Saving to: {output_path}")
-        
+
         with open(output_path, 'wb') as f:
             while True:
                 try:

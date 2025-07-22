@@ -9,7 +9,6 @@ from backend.cryptography.data.sender.compression import compress_file
 from backend.cryptography.data.receiver.compression import decompress_final_chunk
 from backend.cryptography.data.sender.metadata import retrieve_metadata as retrieve_sender_metadata
 from backend.cryptography.core.cipher import encryption, decryption
-import threading
 import time
 
 class RestrictedToRestrictedNAT:

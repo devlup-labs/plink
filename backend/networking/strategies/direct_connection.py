@@ -1,153 +1,217 @@
 import socket
-import multiprocessing
-from backend.cryptography.data.sender.chunk_manager import yield_chunks
-from backend.cryptography.data.receiver.chunk_manager import collect_chunks, join_chunks
+import os
+import json
+import time
+from multiprocessing import Process, Manager, cpu_count
 from utils.logging import log, LogType
+from backend.cryptography.data.sender.chunk_manager import yield_chunks
+from backend.cryptography.data.receiver.chunk_manager import collect_chunks_parallel, join_chunks
+from backend.cryptography.data.sender.compression import compress_file
+from backend.cryptography.data.receiver.compression import decompress_final_chunk
+from backend.cryptography.data.sender.metadata import retrieve_metadata as retrieve_sender_metadata
+from backend.cryptography.core.cipher import encryption, decryption
 
+class DirectConnection:
 
-# Send
+    def __init__(self, self_info, peer_info, self_private_key, peer_public_key, log_path):
+        """
+        Initializes the file transfer session.
 
+        Args:
+            self_info (dict): Network metadata for the local peer.
+            peer_info (dict): Network metadata for the remote peer, received out-of-band.
+            self_private_key: The local peer's private key for decryption.
+            peer_public_key: The remote peer's public key for encryption, received out-of-band.
+            log_path (str): The file path for logging.
+        """
+        # Self network details
+        self.self_ip = self_info["external_ip"]
+        self.self_ports = self_info["open_ports"]
 
-def send_chunk(chunk_data, chunk_num, sender_port, receiver_ip, receiver_port):
-    """
-    Sends a single chunk from sender to receiver
-    """
-    try:
-        # first 4 bytes with represent chunk number
-        header = chunk_num.to_bytes(4, 'big')
-        payload = header + chunk_data
+        # Peer network details
+        self.peer_ip = peer_info["external_ip"]
+        self.peer_ports = peer_info["open_ports"]
 
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-            sock.bind(('', sender_port))
-            sock.sendto(payload, (receiver_ip, receiver_port))
-    except Exception as e:
-        log(f"Failed to send chunk {chunk_num}: {e}", LogType.ERROR, "Failure", "", True)
+        # Cryptographic keys
+        self.private_key = self_private_key
+        self.public_key = peer_public_key
 
+        # System and logging configuration
+        self.log_path = log_path
+        self.worker_count = min(cpu_count() * 2, len(self.self_ports))
 
-def send_file_chunks(file_path, file_metadata, network_metadata,
-                     receiver_local_ip, receiver_external_ip,
-                     receiver_ports, general_logfile_path,
-                     resume_from_chunk=1):
-    """
-    Send a file in chunks using 64 ports in parallel over UDP.
-    """
-    sender_external_ip = network_metadata.get("external_ip")
-    sender_ports = network_metadata.get("open_ports", [])[:64]
+        # The first port pair is the dedicated control channel for metadata
+        self.control_port_self = self.self_ports[0]
+        self.control_port_peer = self.peer_ports[0]
 
-    # Validate direct connection
-    if sender_external_ip != receiver_external_ip:
-        log("Connection is not direct - IPs differ.", LogType.ERROR, "Failure", general_logfile_path, True)
-        return False
+        # The rest of the ports are for high-speed data transfer
+        self.data_ports_self = self.self_ports[1:]
+        self.data_ports_peer = self.peer_ports[1:]
 
-    if not receiver_local_ip or len(sender_ports) < 64 or len(receiver_ports) < 64:
-        log("Missing receiver IP or insufficient ports.", LogType.ERROR, "Failure", general_logfile_path, True)
-        return False
+        log("Session initialized. Control channel established.", general_logfile_path=self.log_path)
+        
+    
+    def send(self, filepath, chunk_size=8192):
+        """
+        Coordinates the entire file sending process.
 
-    log(f"Starting file transfer from chunk {resume_from_chunk}.", LogType.INFO, "Initiated", general_logfile_path, True)
+        1. Compresses the file.
+        2. Generates and encrypts the file metadata.
+        3. Sends metadata over the control channel and waits for acknowledgment.
+        4. Upon acknowledgment, starts the parallel transfer of file data.
+        """
+        # --- Stage 1: File Preparation & Metadata Exchange ---
+        if not os.path.isfile(filepath):
+            log(f"File not found: {filepath}", LogType.CRITICAL, "Failure", self.log_path)
+            return
 
-    processes = []
-    chunk_size = file_metadata["chunk_size"]
+        temp_dir = f"temp_sender_{os.getpid()}"
+        os.makedirs(temp_dir, exist_ok=True)
+        compressed_path = compress_file(filepath, temp_dir, self.log_path)
+        log(f"File compressed to {compressed_path}", general_logfile_path=self.log_path)
 
-    for chunk_num, chunk_data in yield_chunks(file_path, chunk_size, general_logfile_path, offset=resume_from_chunk):
-        index = (chunk_num - 1) % 64
-        sender_port = sender_ports[index]
-        receiver_port = receiver_ports[index]
+        metadata = retrieve_sender_metadata(
+            file_path=str(compressed_path),
+            chunk_size=chunk_size,
+            public_ip=self.self_ip,
+            ports=self.self_ports,
+            general_logfile_path=self.log_path
+        )
+        encrypted_metadata = encryption(metadata, self.public_key, self.log_path)
 
-        p = multiprocessing.Process(target=send_chunk,
-                                    args=(chunk_data, chunk_num, sender_port, receiver_local_ip, receiver_port))
-        p.start()
-        processes.append(p)
-
-        log(f"Dispatching chunk {chunk_num} from port {sender_port} to port {receiver_port}.",
-            LogType.INFO, "In-Progress", general_logfile_path)
-
-    for p in processes:
-        p.join()
-
-    log("File transfer completed successfully.", LogType.INFO, "Success", general_logfile_path, True)
-    return True
-
-
-# Receive
-
-def receive_on_port(port, shared_dict, chunk_logfile_path, general_logfile_path, total_chunks, chunk_output_dir):
-    """
-    Listens on a specific port and stores received chunk in a shared dictionary and on disk.
-    """
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind(('', port))
-
-    while True:
-        try:
-            data, _ = sock.recvfrom(65536)
-            chunk_num = int.from_bytes(data[:4], 'big')
-            chunk_data = data[4:]
-
-            if chunk_num not in shared_dict:
-                shared_dict[chunk_num] = chunk_data
-                collect_chunks(chunk_logfile_path, general_logfile_path, chunk_data, chunk_output_dir, chunk_num)
-        except Exception as e:
-            log(f"Receive error on port {port}: {e}", LogType.ERROR, "Failure", general_logfile_path)
-
-        if len(shared_dict) == total_chunks:
-            break
-
-    sock.close()
-
-
-def send_success_to_all(sender_ip, sender_ports):
-    """
-    Sends SUCCESS message to all sender ports after transfer completion.
-    """
-    for port in sender_ports:
+        # --- Stage 2: Control Channel Communication ---
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-                sock.sendto(b"SUCCESS", (sender_ip, port))
-        except:
-            continue
+                sock.bind(('', self.control_port_self))
+                log("Sending file metadata. Awaiting confirmation from receiver...", general_logfile_path=self.log_path)
+                sock.sendto(b"[META_START]" + json.dumps(encrypted_metadata).encode() + b"[META_END]", (self.peer_ip, self.control_port_peer))
+
+                sock.settimeout(60.0) # Wait up to 60 seconds for the receiver's 'OK'
+                ack, _ = sock.recvfrom(1024)
+                if ack != b'META_OK':
+                    raise ConnectionAbortedError("Receiver sent an invalid acknowledgment.")
+                log("Receiver confirmed metadata. Starting data transfer.", status="Success", general_logfile_path=self.log_path)
+        except Exception as e:
+            log(f"Metadata exchange failed: {e}", LogType.CRITICAL, "Failure", self.log_path)
+            return
 
 
-def receive_file_chunks(output_file_path, file_metadata, network_metadata,
-                        sender_local_ip, sender_external_ip,
-                        sender_ports, chunk_logfile_path,
-                        chunk_output_dir, general_logfile_path):
-    """
-    Receives chunks in parallel over 64 ports
-    """
-    receiver_external_ip = network_metadata.get("external_ip")
-    receiver_ports = network_metadata.get("open_ports", [])[:64]
-    total_chunks = file_metadata.get("num_chunks")
+        all_chunks = list(yield_chunks(compressed_path, chunk_size, self.log_path))
 
-    if receiver_external_ip != sender_external_ip:
-        log("Connection is not direct - IPs differ.", LogType.ERROR, "Failure", general_logfile_path, True)
-        return False
+        # Distribute chunks among worker processes
+        processes = []
+        for i in range(self.worker_count):
+            worker_chunks = all_chunks[i::self.worker_count]
+            p = Process(target=self._send_worker, args=(worker_chunks,))
+            processes.append(p)
+            p.start()
 
-    if not sender_local_ip or len(receiver_ports) < 64 or len(sender_ports) < 64:
-        log("Missing sender IP or insufficient ports.", LogType.ERROR, "Failure", general_logfile_path, True)
-        return False
+        for p in processes:
+            p.join()
 
-    log("Starting chunk reception.", LogType.INFO, "Initiated", general_logfile_path, True)
+        log("File data sent successfully.", status="Success", general_logfile_path=self.log_path)
+        os.remove(compressed_path)
+        os.rmdir(temp_dir)
 
-    manager = multiprocessing.Manager()
-    shared_chunks = manager.dict()
-    processes = []
+    def _send_worker(self, chunks):
+        """A worker process that sends an assigned list of chunks over the data ports."""
+        with Manager() as manager:
+            sockets = [socket.socket(socket.AF_INET, socket.SOCK_DGRAM) for _ in self.data_ports_self]
+            for i, sock in enumerate(sockets):
+                sock.bind(('', self.data_ports_self[i]))
 
-    for port in receiver_ports:
-        p = multiprocessing.Process(
-            target=receive_on_port,
-            args=(port, shared_chunks, chunk_logfile_path, general_logfile_path, total_chunks, chunk_output_dir)
-        )
-        p.start()
-        processes.append(p)
+            for i, (chunk_num, chunk_data) in enumerate(chunks):
+                header = f"[{chunk_num}]".encode()
+                sock_index = i % len(sockets) # Round-robin socket usage
+                sockets[sock_index].sendto(header + chunk_data, (self.peer_ip, self.data_ports_peer[sock_index]))
 
-    for p in processes:
-        p.join()
+            for sock in sockets:
+                sock.close()
+                
+                
+    def recv(self, output_path="received_file", chunk_size=8192):
+        """
+        Coordinates the entire file receiving process.
 
-    # Making the final file
-    ordered_chunks = [shared_chunks[i + 1] for i in range(total_chunks)]
-    join_chunks(output_file_path, ordered_chunks)
+        1. Listens on the control channel for file metadata.
+        2. Decrypts metadata; if successful, sends an acknowledgment.
+        3. Listens on all data ports in parallel for the file chunks.
+        4. Reassembles and decompresses the file.
+        """
+        # --- Stage 1: Control Channel Communication ---
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+                sock.bind(('', self.control_port_self))
+                sock.settimeout(300.0) # Wait up to 5 minutes for a transfer to start
+                log("Ready to receive. Listening for incoming metadata...", general_logfile_path=self.log_path)
+                data, peer_addr = sock.recvfrom(4096)
 
-    send_success_to_all(sender_local_ip, sender_ports)
+                if not data.startswith(b"[META_START]"):
+                    raise ValueError("Received invalid metadata format.")
 
-    log("File received and reassembled successfully.", LogType.INFO, "Success", general_logfile_path, True)
-    return True
+                metadata_raw = data.split(b"[META_START]")[1].split(b"[META_END]")[0]
+                metadata = decryption(json.loads(metadata_raw.decode()), self.private_key, self.log_path)
+                log(f"Metadata decrypted successfully: {metadata}", general_logfile_path=self.log_path)
+
+                # Acknowledge successful decryption to start the transfer
+                sock.sendto(b'META_OK', (self.peer_ip, self.control_port_peer))
+        except Exception as e:
+            log(f"Failed to receive or decrypt metadata: {e}", LogType.CRITICAL, "Failure", self.log_path)
+            return
+
+        # --- Stage 2: Parallel Data Reception ---
+        temp_dir = f"temp_receiver_{os.getpid()}"
+        os.makedirs(temp_dir, exist_ok=True)
+
+        with Manager() as manager:
+            received_chunks = manager.dict()
+            total_chunks = metadata.get("total_chunks")
+
+            processes = []
+            for i in range(self.worker_count):
+                p = Process(target=self._recv_worker, args=(received_chunks, total_chunks))
+                processes.append(p)
+                p.start()
+
+            for p in processes:
+                p.join()
+
+            # --- Stage 3: Reassembly and Cleanup ---
+            if len(received_chunks) != total_chunks:
+                log(f"Incomplete transfer: Got {len(received_chunks)} of {total_chunks} chunks.", LogType.ERROR, "Failure", self.log_path)
+            else:
+                log("All chunks received. Reassembling file.", status="Success", general_logfile_path=self.log_path)
+
+            chunk_logfile = os.path.join(temp_dir, "chunks.json")
+            collect_chunks_parallel(list(received_chunks), chunk_logfile, self.log_path, temp_dir)
+            joined_path = join_chunks(temp_dir, chunk_logfile, self.log_path, chunk_size=chunk_size)
+            decompress_final_chunk(joined_path, output_path, self.log_path)
+            log(f"File successfully saved to {output_path}", status="Success", general_logfile_path=self.log_path)
+
+        os.remove(chunk_logfile)
+        os.rmdir(temp_dir)
+
+    def _recv_worker(self, received_chunks, total_chunks):
+        """A worker process that listens on assigned ports and collects chunks."""
+        sockets = [socket.socket(socket.AF_INET, socket.SOCK_DGRAM) for _ in self.data_ports_self]
+        for i, sock in enumerate(sockets):
+            sock.bind(('', self.data_ports_self[i]))
+            sock.settimeout(45)
+
+
+        while len(received_chunks) < total_chunks:
+            for sock in sockets:
+                try:
+                    data, _ = sock.recvfrom(8192 + 100)
+                    header_end = data.find(b"]")
+                    chunk_num = int(data[1:header_end])
+                    chunk_data = data[header_end + 1:]
+                    if chunk_num not in received_chunks:
+                        received_chunks[chunk_num] = chunk_data
+                except socket.timeout:
+                    continue
+                except (ValueError, IndexError):
+                    continue
+
+        for sock in sockets:
+            sock.close()

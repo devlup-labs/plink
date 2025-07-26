@@ -45,11 +45,45 @@ def get_network_details(general_logfile_path):
     
     # STUN NAT type detection
     log("Starting STUN NAT type detection", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
+    
+    #using fetch_stun_servers function 
+    def fetch_stun_servers(url):
+            try:
+                response = requests.get(url, timeout=10)
+                response.raise_for_status()
+                lines = response.text.strip().split('\n')
+                stun_servers = []
+                for line in lines:
+                    if ':' in line:
+                        host, port = line.strip().split(':')
+                        stun_servers.append((host, int(port)))
+                return stun_servers
+            except Exception as e:
+                print(f"Error fetching STUN servers: {e}")
+                return []
+    
     try:
         import stun
-        nat_type, external_ip, external_port = stun.get_ip_info()
-        network_details_dict["nat_type"]=nat_type if nat_type else "unknown"
-        network_details_dict["external_ip"]=external_ip if external_ip else "unavailable"
+        # Fetch STUN server list
+        stun_server_list = fetch_stun_servers("https://raw.githubusercontent.com/pradt2/always-online-stun/master/valid_hosts.txt")
+        
+        nat_type = external_ip = external_port = None
+
+        if not stun_server_list:
+            log("No STUN servers fetched", log_type=LogType.ERROR, status="Failure", general_logfile_path=general_logfile_path)
+        else:
+            for host, port in stun_server_list:
+                try:
+                    nat_type, external_ip, external_port = stun.get_ip_info(stun_host=host, stun_port=port)
+                    if nat_type and external_ip:
+                        log(f"STUN detected NAT type: {nat_type}, External IP: {external_ip}, Port: {external_port} using {host}:{port}",
+                            log_type=LogType.INFO, status="Success", general_logfile_path=general_logfile_path)
+                        break
+                except Exception as e:
+                    log(f"STUN failed with {host}:{port} - {e}", log_type=LogType.WARNING, status="Retry", general_logfile_path=general_logfile_path)
+
+        network_details_dict["nat_type"] = nat_type if nat_type else "unknown"
+        network_details_dict["external_ip"] = external_ip if external_ip else "unavailable"
         log(f"STUN detected NAT type: {nat_type}, External IP: {external_ip}, External Port: {external_port}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
     except Exception as e:
         log(f"STUN detection failed: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
@@ -77,8 +111,8 @@ def get_network_details(general_logfile_path):
         
         # Test if we can get the external IP
         try:
-            external_ip = upnp.externalipaddress()
-            log(f"UPnP External IP: {external_ip}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
+            upnp_external_ip = upnp.externalipaddress()
+            log(f"UPnP External IP: {upnp_external_ip}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
             network_details_dict["upnp_enabled"] = True
            
         except Exception as e:

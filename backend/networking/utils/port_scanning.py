@@ -1,114 +1,134 @@
 import socket
-import miniupnpc
-import stun
+import requests
 from utils.logging import LogType, log
 
-PORT_START = 49152
-PORT_END = 65535
 
-def scan_ports(network_metadata,general_logfile_path) :
+def get_network_details(general_logfile_path):
+    """Detect NAT presence and type using IP comparison and STUN."""
 
-    #for UPnP
-    if network_metadata.get("UPnP" , False):
-        try:
-            upnp = miniupnpc.UPnP()
-            upnp.discoverdelay = 200
-            upnp.discover()
-            upnp.selectigd()
-            
-            upnp_ports = []
-            for port in range(PORT_START,PORT_END+1):
-                try:
-                    upnp.addportmapping(port, 'TCP', upnp.lanaddr, port, 'plink-transfer', '')
-                    upnp_ports.append(port)
-                    if len(upnp_ports) == 64:
-                        break
-                except:
-                    continue
-            log(
-                f"scanning of upnp ports complete",
-                LogType.INFO,
-                "Success",
-                general_logfile_path,
-                True
-            )
-            
-            return upnp_ports
+    network_details_dict={} #initiates a dictionary for network details
+
+    log("Starting NAT detection", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
+    # Get local IP
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+        network_details_dict["local_ip"] = local_ip if local_ip else "Unavailable"
+        log(f"Local IP detected: {local_ip}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
         
-        except Exception as e :
-            log(f"Error in scanning upnp ports : {e}",
-            LogType.ERROR,
-            "Failure",
-            general_logfile_path,
-            True
-            )
-            
-    # for NAT
-    elif network_metadata.get("NAT",False) :
-        try :
-            open_ports=[]
-
-            _, external_ip, _ = stun.get_ip_info()
-            
-            if not external_ip:
-                raise Exception("STUN failed to retrieve public IP.")
-
-            for port in range(PORT_START, PORT_END + 1):
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                    s.settimeout(0.5) 
-                    result = s.connect_ex((external_ip, port))
-                    if result == 0:
-                        open_ports.append(port)
-                    if len(open_ports)==64 :
-                        break
-            log(
-                f"scanning of open ports complete",
-                LogType.INFO,
-                "Success",
-                general_logfile_path,
-                True
-            )
-
-            return open_ports
+    except Exception as e:
+        network_details_dict["local_ip"] = "Unavailable"
+        local_ip = f"Error: {e}"
+        print(f"Local IP: {local_ip}")
+        log(f"Local IP detection failed: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
+    
+    # Get public IP
+    try:
+        public_ip = requests.get("https://api.ipify.org").text.strip()
+    except Exception as e:
+        public_ip = f"Error: {e}"
+        log(f"Public IP detection failed: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
         
-        except Exception as e :
-            log(f"Error in scanning open ports : {e}",
-            LogType.ERROR,
-            "Failure",
-            general_logfile_path,
-            True
-            )
-            
-    # if UPnP andNAt both aren't present      
+    log(f"Public IP detected: {public_ip}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
+
+    if public_ip and network_details_dict["local_ip"] != "Unavailable":
+        nat_detected = network_details_dict["local_ip"] != public_ip
+        network_type = "NAT" if nat_detected else "Public"
     else:
+        nat_detected = None
+        network_type = "Unknown"
+
+    network_details_dict["network_type"] = network_type
+    log(f"Network type: {network_type}", log_type=LogType.INFO, status="Success", general_logfile_path=general_logfile_path)
+    
+    # STUN NAT type detection
+    log("Starting STUN NAT type detection", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
+    
+    #using fetch_stun_servers function 
+    def fetch_stun_servers(url):
+            try:
+                response = requests.get(url, timeout=10)
+                response.raise_for_status()
+                lines = response.text.strip().split('\n')
+                stun_servers = []
+                for line in lines:
+                    if ':' in line:
+                        host, port = line.strip().split(':')
+                        stun_servers.append((host, int(port)))
+                return stun_servers
+            except Exception as e:
+                print(f"Error fetching STUN servers: {e}")
+                return []
+    
+    try:
+        import stun
+        # Fetch STUN server list
+        stun_server_list = fetch_stun_servers("https://raw.githubusercontent.com/pradt2/always-online-stun/master/valid_hosts.txt")
+        
+        nat_type = external_ip = external_port = None
+
+        if not stun_server_list:
+            log("No STUN servers fetched", log_type=LogType.ERROR, status="Failure", general_logfile_path=general_logfile_path)
+        else:
+            for host, port in stun_server_list:
+                try:
+                    nat_type, external_ip, external_port = stun.get_ip_info(stun_host=host, stun_port=port)
+                    if nat_type and external_ip:
+                        log(f"STUN detected NAT type: {nat_type}, External IP: {external_ip}, Port: {external_port} using {host}:{port}",
+                            log_type=LogType.INFO, status="Success", general_logfile_path=general_logfile_path)
+                        break
+                except Exception as e:
+                    log(f"STUN failed with {host}:{port} - {e}", log_type=LogType.WARNING, status="Retry", general_logfile_path=general_logfile_path)
+
+        network_details_dict["nat_type"] = nat_type if nat_type else "unknown"
+        network_details_dict["external_ip"] = external_ip if external_ip else "unavailable"
+        log(f"STUN detected NAT type: {nat_type}, External IP: {external_ip}, External Port: {external_port}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
+    except Exception as e:
+        log(f"STUN detection failed: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
+
+    """Detect UPnP availability and capabilities."""
+    log("Starting UPnP detection", log_type=LogType.INFO, status="Success" , general_logfile_path = general_logfile_path)
+    
+    try:
+        import miniupnpc
+        upnp = miniupnpc.UPnP()
+        upnp.discoverdelay = 200
+        log("Discovering UPnP devices...", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
+        ndevices = upnp.discover()
+        if ndevices == 0:
+            log("No UPnP devices found", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
+
+        
+        log(f"UPnP devices found: {ndevices}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
+        
         try:
-            local_ports = []
-            
-            for port in range(PORT_START, PORT_END + 1):
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                    try:
-                        s.bind(('0.0.0.0', port))
-                        local_ports.append(port)
-                        if len(local_ports) == 64:
-                            break
-                    except:
-                        continue
-
-            log(
-                f"scanning of local ports complete",
-                LogType.INFO,
-                "Success",
-                general_logfile_path,
-                True
-            )
-
-            return local_ports
-
+            upnp.selectigd()
         except Exception as e:
-            log(f"Error finding local ports: {e}",
-            LogType.ERROR,
-            "Failure",
-            general_logfile_path,
-            True
-            )
+            log(f"Failed to select UPnP IGD: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
+            
+        
+        # Test if we can get the external IP
+        try:
+            upnp_external_ip = upnp.externalipaddress()
+            log(f"UPnP External IP: {upnp_external_ip}", log_type=LogType.INFO, status="Success", general_logfile_path = general_logfile_path)
+            network_details_dict["upnp_enabled"] = True
+           
+        except Exception as e:
+            log(f"Failed to get UPnP external IP: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
+            network_details_dict["upnp_enabled"] = False
+            
+        firewall_enabled = network_details_dict["network_type"] == "NAT" and not network_details_dict["upnp_enabled"]
+        network_details_dict["firewall_enabled"] = firewall_enabled
+        log(f"Firewall status: {'Enabled' if firewall_enabled else 'Not Detected'}", log_type=LogType.INFO, status="Success", general_logfile_path=general_logfile_path)
 
+    except Exception as e:
+        log(f"UPnP detection failed: {e}", log_type=LogType.ERROR, status="Failure", general_logfile_path = general_logfile_path)
+        network_details_dict["upnp_enabled"] = False
+        network_details_dict["firewall_enabled"] = False
+    
+    network_details_dict["open_ports"]=[] #create an empty open ports list to scan and store open ports
+    #the dictionary will be called in open ports function file and all the open ports would be appended accordingly
+
+    return network_details_dict

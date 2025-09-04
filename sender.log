@@ -1,0 +1,8 @@
+2025-09-04T21:21:39.101972 INFO __init__ Success FC->RC session initialized. Control channel established.
+2025-09-04T21:21:39.102594 CRITICAL send Failure File not found: sample.txt
+2025-09-04T21:23:12.350052 INFO __init__ Success FC->RC session initialized. Control channel established.
+2025-09-04T21:23:12.350645 CRITICAL send Failure File not found: sample.txt
+2025-09-04T21:36:52.667731 INFO __init__ Success FC->RC session initialized. Control channel established.
+2025-09-04T21:36:52.668354 CRITICAL send Failure File not found: sample.txt
+2025-09-04T21:40:06.713050 INFO __init__ Success FC->RC session initialized. Control channel established.
+2025-09-04T21:40:06.713595 CRITICAL send Failure File not found: sample.txt

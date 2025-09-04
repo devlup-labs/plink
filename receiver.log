@@ -1,0 +1,90 @@
+2025-09-04T21:20:10.468439 INFO __init__ Success FC->RC session initialized. Control channel established.
+2025-09-04T21:20:10.513858 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:20:10.514652 INFO recv Success Ready to receive. Listening for incoming metadata...
+2025-09-04T21:20:10.749959 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:20:20.758674 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:20:30.770146 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:20:40.785957 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:20:50.799473 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:21:00.807848 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:21:10.824554 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:21:20.832714 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:21:30.844970 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:21:40.860954 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:21:50.880658 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:22:00.898949 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:23:04.549813 INFO __init__ Success FC->RC session initialized. Control channel established.
+2025-09-04T21:23:04.575343 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:23:04.575782 INFO recv Success Ready to receive. Listening for incoming metadata...
+2025-09-04T21:23:04.720971 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:23:14.731374 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:23:24.742702 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:23:34.753809 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:23:44.774329 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:23:54.795494 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:24:04.824200 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:24:14.849911 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:24:24.870757 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:24:34.889742 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:24:44.910872 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:24:54.942151 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:25:04.956131 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:25:14.982125 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:25:24.994352 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:25:35.011229 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:25:45.027796 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:25:55.045147 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:26:05.057293 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:26:15.073225 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:26:25.085545 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:26:35.094717 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:26:45.108871 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:26:55.122029 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:27:05.141958 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:27:15.154860 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:27:25.163147 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:27:35.178938 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:27:45.201870 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:27:55.224132 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:28:05.240436 INFO _punch_hole HolePunch Sent control punch packet
+2025-09-04T21:28:15.257555 INFO _punch_hole HolePunch Sent control punch packet
+2025-09-04T21:28:16.601871 CRITICAL recv Failure Failed to receive or decrypt metadata: timed out
+2025-09-04T21:31:57.622838 INFO __init__ Success FC->RC session initialized. Control channel established.
+2025-09-04T21:36:34.669320 INFO __init__ Success FC->RC session initialized. Control channel established.
+2025-09-04T21:36:34.692692 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:36:34.693281 INFO recv Success Ready to receive. Listening for incoming metadata...
+2025-09-04T21:36:34.859915 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:36:44.869418 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:36:54.880720 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:37:04.907305 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:37:14.923375 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:37:24.952769 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:37:34.966808 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:37:44.976676 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:40:02.083178 INFO __init__ Success FC->RC session initialized. Control channel established.
+2025-09-04T21:40:02.107561 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:40:02.108005 INFO recv Success Ready to receive. Listening for incoming metadata...
+2025-09-04T21:40:02.297632 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:40:12.311656 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:40:22.340317 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:40:32.356377 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:40:42.388287 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:40:52.407735 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:41:02.419939 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:41:12.432027 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:41:22.442934 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:41:32.463177 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:41:42.470286 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:41:52.484427 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:42:02.504220 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:42:12.529133 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:42:22.550483 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:42:32.568755 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:42:42.591076 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:42:52.609990 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:43:02.636126 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:43:12.654557 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:43:22.665735 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:43:32.678620 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:43:42.690541 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted
+2025-09-04T21:43:52.706003 WARNING _punch_hole Failure Control hole punch failed: [WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted

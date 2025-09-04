@@ -1,0 +1,21 @@
+2025-08-02T13:47:35.871954 INFO __init__ Success Session initialized. Control channel established.
+2025-08-02T13:47:35.872837 INFO recv Success Ready to receive. Listening for incoming metadata...
+2025-08-02T13:47:37.878743 INFO __init__ Success Session initialized. Control channel established.
+2025-08-02T13:47:37.892854 INFO compress_file Success Tarfile Compressed
+2025-08-02T13:47:37.893087 INFO compress_file Success File/Folder compressed succesfully
+2025-08-02T13:47:37.893393 INFO send Success File compressed to temp_sender_24816\test_data.txt.zst
+2025-08-02T13:47:37.893628 INFO retrieve_metadata Success file metadata retrived
+2025-08-02T13:47:37.900672 INFO encryption Started Metadata encryption initiated
+2025-08-02T13:47:37.901123 DEBUG encryption Success Metadata converted to JSON string
+2025-08-02T13:47:37.901419 DEBUG encryption Success JSON string converted to bytes for encryption
+2025-08-02T13:49:40.905357 INFO __init__ Success Session initialized. Control channel established.
+2025-08-02T13:49:40.906192 INFO recv Success Ready to receive. Listening for incoming metadata...
+2025-08-02T13:49:42.927591 INFO __init__ Success Session initialized. Control channel established.
+2025-08-02T13:49:42.929785 INFO compress_file Success Tarfile Compressed
+2025-08-02T13:49:42.930034 INFO compress_file Success File/Folder compressed succesfully
+2025-08-02T13:49:42.930381 INFO send Success File compressed to temp_sender_27040\test_data.txt.zst
+2025-08-02T13:49:42.930605 INFO retrieve_metadata Success file metadata retrived
+2025-08-02T13:49:42.930765 INFO encryption Started Metadata encryption initiated
+2025-08-02T13:49:42.930945 DEBUG encryption Success Metadata converted to JSON string
+2025-08-02T13:49:42.931156 DEBUG encryption Success JSON string converted to bytes for encryption
+2025-08-02T13:54:40.917053 CRITICAL recv Failure Failed to receive or decrypt metadata: timed out

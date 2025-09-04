@@ -145,68 +145,6 @@ class FullConeToFullConeNAT:
     # --------------------------------------------------- #
     #                    RECEIVING LOGIC                  #
     # --------------------------------------------------- #
-    def recv(self, output_path="received_file", chunk_size=8192):
-        """
-        Coordinates the entire file receiving process.
-
-        1. Listens on the control channel for file metadata.
-        2. Decrypts metadata; if successful, sends an acknowledgment.
-        3. Listens on all data ports in parallel for the file chunks.
-        4. Reassembles and decompresses the file.
-        """
-        # --- Stage 1: Control Channel Communication ---
-        try:
-            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-                sock.bind(('', self.control_port_self))
-                sock.settimeout(300.0) # Wait up to 5 minutes for a transfer to start
-                log("Ready to receive. Listening for incoming metadata...", general_logfile_path=self.log_path)
-                data, peer_addr = sock.recvfrom(4096)
-
-                if not data.startswith(b"[META_START]"):
-                    raise ValueError("Received invalid metadata format.")
-
-                metadata_raw = data.split(b"[META_START]")[1].split(b"[META_END]")[0]
-                metadata = decryption(json.loads(metadata_raw.decode()), self.private_key, self.log_path)
-                log(f"Metadata decrypted successfully: {metadata}", general_logfile_path=self.log_path)
-
-                # Acknowledge successful decryption to start the transfer
-                sock.sendto(b'META_OK', (self.peer_ip, self.control_port_peer))
-        except Exception as e:
-            log(f"Failed to receive or decrypt metadata: {e}", LogType.CRITICAL, "Failure", self.log_path)
-            return
-
-        # --- Stage 2: Parallel Data Reception ---
-        temp_dir = f"temp_receiver_{os.getpid()}"
-        os.makedirs(temp_dir, exist_ok=True)
-
-        with Manager() as manager:
-            received_chunks = manager.list()
-            total_chunks = metadata.get("total_chunks")
-
-            processes = []
-            for i in range(self.worker_count):
-                p = Process(target=self._recv_worker, args=(received_chunks, total_chunks))
-                processes.append(p)
-                p.start()
-
-            for p in processes:
-                p.join()
-
-            # --- Stage 3: Reassembly and Cleanup ---
-            if len(received_chunks) != total_chunks:
-                log(f"Incomplete transfer: Got {len(received_chunks)} of {total_chunks} chunks.", LogType.ERROR, "Failure", self.log_path)
-            else:
-                log("All chunks received. Reassembling file.", status="Success", general_logfile_path=self.log_path)
-
-            chunk_logfile = os.path.join(temp_dir, "chunks.json")
-            collect_chunks_parallel(list(received_chunks), chunk_logfile, self.log_path, temp_dir)
-            joined_path = join_chunks(temp_dir, chunk_logfile, self.log_path, chunk_size=chunk_size)
-            decompress_final_chunk(joined_path, output_path, self.log_path)
-            log(f"File successfully saved to {output_path}", status="Success", general_logfile_path=self.log_path)
-
-        os.remove(chunk_logfile)
-        os.rmdir(temp_dir)
-
     def _recv_worker(self, received_chunks, total_chunks):
         """A worker process that listens on assigned ports and collects chunks."""
         sockets = [socket.socket(socket.AF_INET, socket.SOCK_DGRAM) for _ in self.data_ports_self]

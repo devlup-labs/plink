@@ -1,5 +1,21 @@
 
 """
+This file is a sanity check script your seniors gave you.
+It doesnt do real file transfer — instead it just:
+
+Imports your NAT strategy classes (FC_to_RC, FC_to_PRC, RC_to_RC).
+
+Instantiates them with dummy configs (fake IPs, fake ports, fake keys).
+
+Runs their initialization code to make sure:
+
+No syntax errors.
+
+No missing imports.
+
+Multiprocessing workers start correctly.
+
+All 64 ports are being used properly.
 Lightweight sanity tests (no real peer transfer). These tests validate:
 - Port list sizes (exactly 64)
 - Class initialization succeeds

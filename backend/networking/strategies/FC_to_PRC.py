@@ -14,7 +14,7 @@ from backend.cryptography.core.cipher import encryption, decryption
 
 class FullConeToPortRestrictedConeNAT:
     """
-    Full-Cone (us) -> Port-Restricted-Cone (peer)
+    Full-Cone -> Port-Restricted-Cone
     Port-restricted requires mapping to the exact (IP, PORT) tuple used.
     We therefore strictly pair each of our data ports to the peer's port,
     and maintain those bindings with scheduled keepalives.

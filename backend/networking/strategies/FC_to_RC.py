@@ -14,7 +14,7 @@ from backend.cryptography.core.cipher import encryption, decryption
 
 class FullConeToRestrictedConeNAT:
     """
-    Full-Cone (us) -> Restricted-Cone (peer)
+    Full-Cone -> Restricted-Cone 
     Control + 63 data ports (total 64). Adds robust keepalive + validation.
     """
 

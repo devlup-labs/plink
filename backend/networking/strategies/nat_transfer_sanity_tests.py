@@ -15,6 +15,12 @@ No missing imports.
 
 Multiprocessing workers start correctly.
 
+Example output you saw earlier
+
+FullConeToRestrictedConeNAT initialized OK with 12 workers
+FullConeToPortRestrictedConeNAT initialized OK with 12 workers
+RestrictedToRestrictedNAT initialized OK with 12 workers
+
 All 64 ports are being used properly.
 Lightweight sanity tests (no real peer transfer). These tests validate:
 - Port list sizes (exactly 64)

@@ -1,6 +1,0 @@
-2025-09-06T00:54:06.660510 INFO main Started Application started
-2025-09-06T00:54:06.660739 INFO sender_flow Started Sender mode initiated
-2025-09-06T00:54:07.346088 INFO sender_flow Success Cryptographic keys generated
-2025-09-06T00:54:07.346260 INFO create_plink_file Started Creating .plink file
-2025-09-06T00:54:07.346488 INFO create_plink_file Success .plink file created: plink_sender_20250906_005407.plink
-2025-09-06T00:54:07.346576 INFO sender_flow Success .plink file created successfully

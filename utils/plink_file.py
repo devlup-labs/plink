@@ -79,8 +79,7 @@ def read_plink_file(file_path: str, general_logfile_path="app.log") -> str:
         public_key = plink_content["public_key"]
 
         # Validate that it looks like a PEM key
-        if not (public_key.startswith("-----BEGIN PUBLIC KEY-----") and
-                public_key.endswith("-----END PUBLIC KEY-----")):
+        if "-----BEGIN PUBLIC KEY-----" not in public_key or "-----END PUBLIC KEY-----" not in public_key:
             raise ValueError("Invalid public key format in .plink file")
 
         log(f".plink file read successfully: {plink_content['role']} key from {plink_content['created_at']}",
@@ -139,8 +138,7 @@ def validate_plink_file(file_path: str, general_logfile_path="app.log") -> dict:
 
         # Validate public key format
         public_key = plink_content["public_key"]
-        if not (public_key.startswith("-----BEGIN PUBLIC KEY-----") and
-                public_key.endswith("-----END PUBLIC KEY-----")):
+        if "-----BEGIN PUBLIC KEY-----" not in public_key or "-----END PUBLIC KEY-----" not in public_key:
             raise ValueError("Invalid public key format in .plink file")
 
         log(f".plink file validation successful", LogType.INFO, "Success", general_logfile_path)

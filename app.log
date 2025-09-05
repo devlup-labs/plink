@@ -1,0 +1,35 @@
+2025-09-05T23:12:36.825058 INFO main Started Application started
+2025-09-05T23:12:36.825303 INFO sender_flow Started Sender mode initiated
+2025-09-05T23:12:38.060902 INFO sender_flow Success Cryptographic keys generated
+2025-09-05T23:12:38.061101 INFO create_plink_file Started Creating .plink file
+2025-09-05T23:12:38.061352 INFO create_plink_file Success .plink file created: plink_sender_20250905_231238.plink
+2025-09-05T23:12:38.061454 INFO sender_flow Success .plink file created successfully
+2025-09-05T23:12:54.866601 INFO read_plink_file Started Reading .plink file: /Users/levi/Desktop/plink/plink_sender_20250905_231238.plink
+2025-09-05T23:12:54.869152 ERROR read_plink_file Failure Failed to read .plink file: 'str' object has no attribute 'contains'
+2025-09-05T23:16:15.785225 WARNING main Cancelled Application cancelled by user
+2025-09-05T23:16:22.522603 INFO main Started Application started
+2025-09-05T23:16:22.522753 INFO sender_flow Started Sender mode initiated
+2025-09-05T23:16:23.996347 INFO sender_flow Success Cryptographic keys generated
+2025-09-05T23:16:23.996579 INFO create_plink_file Started Creating .plink file
+2025-09-05T23:16:23.997224 INFO create_plink_file Success .plink file created: plink_sender_20250905_231623.plink
+2025-09-05T23:16:23.997334 INFO sender_flow Success .plink file created successfully
+2025-09-05T23:16:29.409640 INFO read_plink_file Started Reading .plink file: /Users/levi/Desktop/plink/plink_sender_20250905_231623.plink
+2025-09-05T23:16:29.410986 INFO read_plink_file Success .plink file read successfully: sender key from 2025-09-05T23:16:23.996845
+2025-09-05T23:16:29.411947 INFO sender_flow Success Peer's public key loaded from .plink file
+2025-09-05T23:16:45.656731 INFO sender_flow Success Network analysis completed
+2025-09-05T23:16:45.668122 INFO sender_flow Success Link file created successfully
+2025-09-05T23:16:59.548016 INFO sender_flow Success Peer link decrypted successfully
+2025-09-05T23:16:59.549162 INFO choose_strategy Started Analyzing network types to choose strategy
+2025-09-05T23:16:59.549298 INFO choose_strategy Success Using DirectConnection strategy - same network
+2025-09-05T23:16:59.549411 INFO __init__ Success DirectConnection session initialized
+2025-09-05T23:16:59.552288 INFO compress_file Success Tarfile Compressed
+2025-09-05T23:16:59.552390 INFO compress_file Success File/Folder compressed succesfully
+2025-09-05T23:16:59.552473 INFO send Success File compressed to temp_sender_6237/requirements.txt.zst
+2025-09-05T23:16:59.552577 INFO retrieve_metadata Success file metadata retrived
+2025-09-05T23:16:59.552645 INFO encryption Started Metadata encryption initiated
+2025-09-05T23:16:59.552726 DEBUG encryption Success Metadata converted to JSON string
+2025-09-05T23:16:59.552780 DEBUG encryption Success JSON string converted to bytes for encryption
+2025-09-05T23:16:59.553089 INFO encryption Success Metadata encrypted using RSA public key
+2025-09-05T23:16:59.553149 INFO encryption Success Encrypted metadata base64 encoded
+2025-09-05T23:16:59.553277 INFO send Started Sending file metadata. Awaiting confirmation from receiver...
+2025-09-05T23:17:34.021439 WARNING main Cancelled Application cancelled by user

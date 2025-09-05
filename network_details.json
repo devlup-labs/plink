@@ -1,0 +1,617 @@
+{
+  "network_type": "Behind NAT",
+  "nat_type": "Port Restricted Cone NAT",
+  "nat_detection_details": {
+    "test_results": [
+      {
+        "test": "Test 1 - Basic STUN",
+        "server": "stun.frozenmountain.com",
+        "server_port": 3478,
+        "local_port": 64621,
+        "external_ip": "59.145.92.85",
+        "external_port": 64621,
+        "success": true
+      },
+      {
+        "test": "Test 2 - Same local port, different server",
+        "server": "stun.lleida.net",
+        "server_port": 3478,
+        "local_port": 64621,
+        "external_ip": "59.145.92.85",
+        "external_port": 64621,
+        "success": true
+      },
+      {
+        "test": "Test 4 - Different local port, same server",
+        "server": "stun.frozenmountain.com",
+        "server_port": 3478,
+        "local_port": 57251,
+        "external_ip": "59.145.92.85",
+        "external_port": 57251,
+        "success": true
+      }
+    ],
+    "analysis": [
+      "Local IP: 172.31.107.240",
+      "External IP: 59.145.92.85",
+      "Test 1 vs Test 2:",
+      "  External IP same: True (59.145.92.85 vs 59.145.92.85)",
+      "  External Port same: True (64621 vs 64621)",
+      "Test 1 vs Test 4 (different local port):",
+      "  External Port different: True (64621 vs 57251)"
+    ],
+    "reasoning": [
+      "External IP differs from local IP - Behind NAT",
+      "Same external IP:Port from different servers - Indicates cone NAT",
+      "Different local port gives different external port - Port Restricted Cone NAT"
+    ]
+  },
+  "upnp_enabled": false,
+  "external_ip": "59.145.92.85",
+  "local_ip": "172.31.107.240",
+  "open_ports": [
+    {
+      "port": 80,
+      "status": "open",
+      "direction": "outbound"
+    },
+    {
+      "port": 443,
+      "status": "open",
+      "direction": "outbound"
+    },
+    {
+      "port": 5060,
+      "status": "open",
+      "direction": "outbound"
+    },
+    {
+      "port": 8000,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8001,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8002,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8003,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8004,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8005,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8006,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8007,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8008,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8009,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8010,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8011,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8012,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8013,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8014,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8015,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8016,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8017,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8018,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8019,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8020,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8021,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8022,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8023,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8024,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8025,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8026,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8027,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8028,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8029,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8030,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8031,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8032,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8033,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8034,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8035,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8036,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8037,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8038,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8039,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8040,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8041,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8042,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8043,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8044,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8045,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8046,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8047,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8048,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8049,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8050,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8051,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8052,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8053,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8054,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8055,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8056,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8057,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8058,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8059,
+      "status": "bindable",
+      "direction": "inbound"
+    },
+    {
+      "port": 8060,
+      "status": "bindable",
+      "direction": "inbound"
+    }
+  ],
+  "firewall_blocks": [
+    {
+      "port": 22,
+      "status": "blocked",
+      "direction": "outbound"
+    },
+    {
+      "port": 21,
+      "status": "blocked",
+      "direction": "outbound"
+    },
+    {
+      "port": 25,
+      "status": "blocked",
+      "direction": "outbound"
+    },
+    {
+      "port": 53,
+      "status": "blocked",
+      "direction": "outbound"
+    },
+    {
+      "port": 110,
+      "status": "blocked",
+      "direction": "outbound"
+    },
+    {
+      "port": 143,
+      "status": "blocked",
+      "direction": "outbound"
+    },
+    {
+      "port": 993,
+      "status": "blocked",
+      "direction": "outbound"
+    },
+    {
+      "port": 995,
+      "status": "blocked",
+      "direction": "outbound"
+    },
+    {
+      "port": 3389,
+      "status": "blocked",
+      "direction": "outbound"
+    },
+    {
+      "port": 8080,
+      "status": "blocked",
+      "direction": "outbound"
+    },
+    {
+      "port": 8443,
+      "status": "blocked",
+      "direction": "outbound"
+    }
+  ],
+  "stun_results": [
+    {
+      "success": true,
+      "external_ip": "59.145.92.85",
+      "external_port": 64621,
+      "local_port": 64621,
+      "server": "stun.frozenmountain.com",
+      "server_port": 3478
+    },
+    {
+      "success": true,
+      "external_ip": "59.145.92.85",
+      "external_port": 64621,
+      "local_port": 64621,
+      "server": "stun.lleida.net",
+      "server_port": 3478
+    },
+    {
+      "success": true,
+      "external_ip": "59.145.92.85",
+      "external_port": 57251,
+      "local_port": 57251,
+      "server": "stun.frozenmountain.com",
+      "server_port": 3478
+    }
+  ],
+  "connection_test": {
+    "https://httpbin.org/ip": "success"
+  },
+  "recommendations": [
+    "Port Restricted Cone NAT - P2P connections may be challenging",
+    "Use multiple simultaneous connection attempts",
+    "Try birthday paradox and sequential port strategies",
+    "UPnP not available - manual port forwarding required",
+    "11 ports appear to be blocked by firewall",
+    "Consider configuring firewall rules for your application",
+    "Found 64 open ports - sufficient for your app",
+    "Successfully found 64 ports for your app",
+    "Use the recommended ports list for optimal P2P performance",
+    "3 outbound ports available for connections",
+    "61 inbound ports available for listening"
+  ],
+  "firewall_info": {
+    "type": "pf",
+    "error": "pfctl not accessible (non-zero exit)"
+  },
+  "external_ip_http": "59.145.92.85",
+  "app_ports": {
+    "total_found": 64,
+    "target": 64,
+    "success": true,
+    "outbound_ports": [
+      80,
+      443,
+      5060
+    ],
+    "inbound_ports": [
+      8000,
+      8001,
+      8002,
+      8003,
+      8004,
+      8005,
+      8006,
+      8007,
+      8008,
+      8009,
+      8010,
+      8011,
+      8012,
+      8013,
+      8014,
+      8015,
+      8016,
+      8017,
+      8018,
+      8019,
+      8020,
+      8021,
+      8022,
+      8023,
+      8024,
+      8025,
+      8026,
+      8027,
+      8028,
+      8029,
+      8030,
+      8031,
+      8032,
+      8033,
+      8034,
+      8035,
+      8036,
+      8037,
+      8038,
+      8039,
+      8040,
+      8041,
+      8042,
+      8043,
+      8044,
+      8045,
+      8046,
+      8047,
+      8048,
+      8049,
+      8050,
+      8051,
+      8052,
+      8053,
+      8054,
+      8055,
+      8056,
+      8057,
+      8058,
+      8059,
+      8060
+    ],
+    "recommended_ports": [
+      80,
+      443,
+      5060,
+      8000,
+      8001,
+      8002,
+      8003,
+      8004,
+      8005,
+      8006,
+      8007,
+      8008,
+      8009,
+      8010,
+      8011,
+      8012,
+      8013,
+      8014,
+      8015,
+      8016,
+      8017,
+      8018,
+      8019,
+      8020,
+      8021,
+      8022,
+      8023,
+      8024,
+      8025,
+      8026,
+      8027,
+      8028,
+      8029,
+      8030,
+      8031,
+      8032,
+      8033,
+      8034,
+      8035,
+      8036,
+      8037,
+      8038,
+      8039,
+      8040,
+      8041,
+      8042,
+      8043,
+      8044,
+      8045,
+      8046,
+      8047,
+      8048,
+      8049,
+      8050,
+      8051,
+      8052,
+      8053,
+      8054,
+      8055,
+      8056,
+      8057,
+      8058,
+      8059,
+      8060
+    ]
+  }
+}

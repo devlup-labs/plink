@@ -77,11 +77,11 @@ def choose_strategy(self_info, peer_info, self_private_key, peer_public_key, log
         ('prc', 'prc'): ('Port Restricted to Port Restricted NAT Traversal', PortRestrictedToPortRestrictedNAT),
         ('prc', 'rc'): ('Restricted Cone to Port-Restricted NAT Traversal', RestrictedToPortRestrictedNAT),
         ('rc', 'rc'): ('Restricted Cone to Restricted Cone NAT Traversal', RestrictedToRestrictedNAT),
-        ('rc', 'sym'): ('Restricted Cone to Symmetric NAT Traversal', RestrictedToSymmetricNAT),
+        # ('rc', 'sym'): ('Restricted Cone to Symmetric NAT Traversal', RestrictedToSymmetricNAT),
     }
 
     if nat_pair_key in strategy_map:
-        strategy_name, strategy_class = strategy_map[nat_pair_key]
+        (strategy_name, strategy_class) = strategy_map[nat_pair_key]
         print(f"Strategy: {strategy_name}")
         log(f"Using {strategy_class.__name__} strategy", LogType.INFO, "Success", log_path)
 

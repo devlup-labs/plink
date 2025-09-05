@@ -18,8 +18,14 @@ from cryptography.hazmat.primitives import serialization
 # Import all available P2P strategies
 from backend.networking.strategies.direct_connection import DirectConnection
 from backend.networking.strategies.FC_to_FC import FullConeToFullConeNAT
-from backend.networking.strategies.PRC_to_PRC import PortRestrictedToPortRestrictedNAT
+from backend.networking.strategies.FC_to_RC import FullConeToRestrictedConeNAT
+from backend.networking.strategies.FC_to_PRC import FullConeToPortRestrictedNAT
+from backend.networking.strategies.FC_to_SYM import FullConeToSymmetricNAT
+from backend.networking.strategies.RC_to_RC import RestrictedToRestrictedNAT
 from backend.networking.strategies.RC_to_PRC import RestrictedToPortRestrictedNAT
+# from backend.networking.strategies.RC_to_SYM import RestrictedToSymmetricNAT
+from backend.networking.strategies.PRC_to_PRC import PortRestrictedToPortRestrictedNAT
+
 
 def choose_strategy(self_info, peer_info, self_private_key, peer_public_key, log_path, is_sender=True):
     """
@@ -43,50 +49,70 @@ def choose_strategy(self_info, peer_info, self_private_key, peer_public_key, log
     self_external_ip = self_info.get('external_ip', '')
     peer_external_ip = peer_info.get('external_ip', '')
 
-    print(f"\n Network Analysis:")
-    print(f"   Your NAT type: {self_nat}")
-    print(f"   Peer's NAT type: {peer_nat}")
-    print(f"   Your external IP: {self_external_ip}")
-    print(f"   Peer's external IP: {peer_external_ip}")
+    print(f"\nNetwork Analysis:")
+    print(f"    Your NAT type: {self_nat}")
+    print(f"    Peer's NAT type: {peer_nat}")
+    print(f"    Your external IP: {self_external_ip}")
+    print(f"    Peer's external IP: {peer_external_ip}")
 
-    # Strategy 1: Same network detection (same external IP)
+    # Strategy 1: Same network detection (highest priority)
     if self_external_ip == peer_external_ip:
-        print(" Strategy: Direct Connection (Same Network)")
+        print("Strategy: Direct Connection (Same Network)")
         log("Using DirectConnection strategy - same network", LogType.INFO, "Success", log_path)
         return DirectConnection(self_info, peer_info, self_private_key, peer_public_key, log_path)
 
-    # Strategy 2: Full Cone to Full Cone NAT
-    if ('Full Cone' in self_nat or 'Open Internet' in self_nat) and \
-       ('Full Cone' in peer_nat or 'Open Internet' in peer_nat):
-        print(" Strategy: Full Cone to Full Cone NAT Traversal")
-        log("Using FullConeToFullConeNAT strategy", LogType.INFO, "Success", log_path)
-        return FullConeToFullConeNAT(self_info, peer_info, self_private_key, peer_public_key, log_path)
+    # Helper to categorize NAT types into simple keys
+    def get_nat_category(nat_string):
+        if 'Full Cone' in nat_string or 'Open Internet' in nat_string:
+            return 'fc'
+        if 'Restricted Cone' in nat_string:
+            return 'rc'
+        if 'Port Restricted Cone' in nat_string:
+            return 'prc'
+        if 'Symmetric' in nat_string:
+            return 'sym'
+        return 'unknown'
 
-    # Strategy 3: Port Restricted to Port Restricted NAT
-    if 'Port Restricted Cone' in self_nat and 'Port Restricted Cone' in peer_nat:
-        print(" Strategy: Port Restricted to Port Restricted NAT Traversal")
-        log("Using PortRestrictedToPortRestrictedNAT strategy", LogType.INFO, "Success", log_path)
-        return PortRestrictedToPortRestrictedNAT(
-            self_info, peer_info, self_private_key, peer_public_key,
-            log_path, is_initiator=is_sender
-        )
+    self_cat = get_nat_category(self_nat)
+    peer_cat = get_nat_category(peer_nat)
 
-    # Strategy 4: Restricted Cone to Port Restricted (and vice versa)
-    if ('Restricted Cone' in self_nat and 'Port Restricted Cone' in peer_nat) or \
-       ('Port Restricted Cone' in self_nat and 'Restricted Cone' in peer_nat):
-        print(" Strategy: Restricted/Port-Restricted NAT Traversal")
-        log("Using RestrictedToPortRestrictedNAT strategy", LogType.INFO, "Success", log_path)
-        return RestrictedToPortRestrictedNAT(self_info, peer_info, self_private_key, peer_public_key, log_path)
+    # Create a sorted, unique key for the NAT pair to handle commutativity
+    # (e.g., A-to-B is the same as B-to-A)
+    nat_pair_key = tuple(sorted((self_cat, peer_cat)))
 
-    # Strategy 5: Any NAT to Full Cone (fallback)
-    if 'Full Cone' in self_nat or 'Full Cone' in peer_nat or \
-       'Open Internet' in self_nat or 'Open Internet' in peer_nat:
-        print(" Strategy: NAT to Full Cone (Fallback)")
-        log("Using FullConeToFullConeNAT strategy as fallback", LogType.INFO, "Success", log_path)
-        return FullConeToFullConeNAT(self_info, peer_info, self_private_key, peer_public_key, log_path)
+    # Map of NAT pair keys to their corresponding strategy class and descriptive name
+    strategy_map = {
+        ('fc', 'fc'): ('Full Cone to Full Cone NAT Traversal', FullConeToFullConeNAT),
+        ('fc', 'prc'): ('Full Cone to Port-Restricted NAT Traversal', FullConeToPortRestrictedNAT),
+        ('fc', 'rc'): ('Full Cone to Restricted Cone NAT Traversal', FullConeToRestrictedConeNAT),
+        ('fc', 'sym'): ('Full Cone to Symmetric NAT Traversal', FullConeToSymmetricNAT),
+        ('prc', 'prc'): ('Port Restricted to Port Restricted NAT Traversal', PortRestrictedToPortRestrictedNAT),
+        ('prc', 'rc'): ('Restricted Cone to Port-Restricted NAT Traversal', RestrictedToPortRestrictedNAT),
+        ('rc', 'rc'): ('Restricted Cone to Restricted Cone NAT Traversal', RestrictedToRestrictedNAT),
+        ('rc', 'sym'): ('Restricted Cone to Symmetric NAT Traversal', RestrictedToSymmetricNAT),
+    }
 
-    # Strategy 6: Generic fallback for unknown NAT types
-    print(" Strategy: Generic NAT Traversal (Fallback)")
+    if nat_pair_key in strategy_map:
+        strategy_name, strategy_class = strategy_map[nat_pair_key]
+        print(f"Strategy: {strategy_name}")
+        log(f"Using {strategy_class.__name__} strategy", LogType.INFO, "Success", log_path)
+
+        # Certain strategies require knowledge of who is initiating the connection
+        if strategy_class in [PortRestrictedToPortRestrictedNAT]:
+            return strategy_class(
+                self_info, peer_info, self_private_key, peer_public_key,
+                log_path, is_initiator=is_sender
+            )
+        else:
+            return strategy_class(self_info, peer_info, self_private_key, peer_public_key, log_path)
+
+    # Handle difficult or unsupported combinations before falling back
+    if 'sym' in nat_pair_key:
+        print("Warning: Direct connection with a Symmetric NAT is often unreliable and not directly supported. Attempting fallback.")
+        log(f"Unsupported NAT combination: {nat_pair_key}. Attempting fallback.", LogType.WARNING, "Fallback", log_path)
+
+    # Generic fallback for all other unknown or unhandled NAT types
+    print("Strategy: Generic NAT Traversal (Fallback)")
     log("Using DirectConnection as last resort fallback", LogType.WARNING, "Fallback", log_path)
     return DirectConnection(self_info, peer_info, self_private_key, peer_public_key, log_path)
 
@@ -124,174 +150,233 @@ def validate_output_dir(output_dir):
         return False
 
 def sender_flow(file_path, log_path):
-    """Handle the sender flow."""
-    print("Starting plink sender...")
+    """Handle the sender flow with new key exchange process."""
+    print("\nStarting plink sender...")
     log("Sender mode initiated", LogType.INFO, "Started", log_path)
 
     # Validate file
     if not validate_file_path(file_path):
         return False
 
-    # Generate cryptographic keys
-    print(" Generating encryption keys...")
-    private_pem, public_pem = GenKey()
-    private_key = serialization.load_pem_private_key(private_pem.encode(), password=None)
-    log("Cryptographic keys generated", LogType.INFO, "Success", log_path)
+    # Step 1: Generate cryptographic keys
+    print("\nGenerating encryption keys...")
+    try:
+        private_pem, public_pem = GenKey()
+        private_key = serialization.load_pem_private_key(private_pem.encode(), password=None)
+        log("Cryptographic keys generated", LogType.INFO, "Success", log_path)
+    except Exception as e:
+        print(f"Key generation failed: {e}")
+        log(f"Key generation failed: {e}", LogType.ERROR, "Failure", log_path)
+        return False
 
-    # Analyze network
-    print(" Analyzing your network...")
+    # Step 2: Display public key and get peer's public key
+    print("\n" + "="*80)
+    print("YOUR PUBLIC KEY (share this with the receiver):")
+    print("="*80)
+    print(public_pem)
+    print("="*80)
+    print("\nPlease copy the above public key and send it to the receiver.")
+    print("Then paste the receiver's public key below when you receive it.\n")
+
+    # Get peer's public key
+    while True:
+        print("Waiting for receiver's public key...")
+        peer_public_key_pem = input("Enter the receiver's public key (paste here): ").strip()
+
+        if peer_public_key_pem:
+            try:
+                peer_public_key = serialization.load_pem_public_key(peer_public_key_pem.encode())
+                print("Receiver's public key loaded successfully!")
+                log("Peer's public key loaded successfully", LogType.INFO, "Success", log_path)
+                break
+            except Exception as e:
+                print(f"Invalid public key format: {e}")
+                print("Please enter a valid PEM-formatted public key")
+                continue
+        else:
+            print("Please enter the public key")
+
+    # Step 3: Analyze network
+    print("\nAnalyzing your network...")
     try:
         analyzer = NetworkAnalyzer()
-        network_metadata = analyzer.analyze_network()
-        network_metadata['public_key'] = public_pem
+        network_metadata = analyzer.analyze_network(log_path)
+        print(f"Network analysis completed. Found {len(network_metadata.get('open_ports', []))} available ports.")
         log("Network analysis completed", LogType.INFO, "Success", log_path)
     except Exception as e:
-        print(f" Network analysis failed: {e}")
+        print(f"Network analysis failed: {e}")
         log(f"Network analysis failed: {e}", LogType.ERROR, "Failure", log_path)
         return False
 
-    # Generate and display link
-    print("\n Generating your plink link...")
+    # Step 4: Generate and display encrypted link
+    print("\nGenerating your encrypted plink link...")
     try:
-        my_link = generate_link(network_metadata)
+        my_link = generate_link(network_metadata, peer_public_key, log_path)
         print("\n" + "="*80)
-        print(" YOUR PLINK LINK (share this with the receiver):")
+        print("YOUR PLINK LINK (share this with the receiver):")
         print("="*80)
         print(my_link)
         print("="*80)
+        print("\nPlease copy the above plink link and send it to the receiver.")
+        print("Then paste the receiver's plink link below when you receive it.\n")
         log("Link generated successfully", LogType.INFO, "Success", log_path)
     except Exception as e:
-        print(f" Failed to generate link: {e}")
+        print(f"Failed to generate link: {e}")
         log(f"Link generation failed: {e}", LogType.ERROR, "Failure", log_path)
         return False
 
-    # Get peer's link
-    print("\n Waiting for receiver's plink link...")
+    # Step 5: Get peer's encrypted link
     while True:
-        peer_link = input("Enter the receiver's plink link: ").strip()
+        print("Waiting for receiver's plink link...")
+        peer_link = input("Enter the receiver's plink link (paste here): ").strip()
+
         if peer_link:
             try:
-                peer_metadata = decrypt_link(peer_link)
-                peer_public_key_pem = peer_metadata.get('public_key')
-                if not peer_public_key_pem:
-                    print("❌ Error: Peer's public key not found in link. Please check the link.")
-                    continue
-
-                peer_public_key = serialization.load_pem_public_key(peer_public_key_pem.encode())
+                peer_metadata = decrypt_link(peer_link, private_key, log_path)
+                print("Receiver's link decrypted successfully!")
                 log("Peer link decrypted successfully", LogType.INFO, "Success", log_path)
                 break
-
             except Exception as e:
-                print(f" Invalid link format: {e}")
+                print(f"Invalid link format: {e}")
                 print("Please enter a valid plink:// link")
                 continue
         else:
             print("Please enter a link")
 
-    # Choose and execute strategy
-    print("\n Establishing connection...")
+    # Step 6: Choose and execute strategy
+    print("\nEstablishing connection...")
     strategy = choose_strategy(network_metadata, peer_metadata, private_key, peer_public_key, log_path, is_sender=True)
 
     if not strategy:
-        print(" Could not establish a P2P connection for the given network configuration.")
+        print("Could not establish a P2P connection for the given network configuration.")
         log("No suitable strategy found", LogType.ERROR, "Failure", log_path)
         return False
 
     try:
-        print(" Starting file transfer...")
+        print("\nStarting file transfer...")
         strategy.send(file_path)
-        print(" File transfer completed successfully!")
+        print("File transfer completed successfully!")
         log("File transfer completed successfully", LogType.INFO, "Success", log_path)
         return True
 
     except Exception as e:
-        print(f" File transfer failed: {e}")
+        print(f"File transfer failed: {e}")
         log(f"File transfer failed: {e}", LogType.ERROR, "Failure", log_path)
         return False
 
 def receiver_flow(output_dir, log_path):
-    """Handle the receiver flow."""
-    print(" Starting plink receiver...")
+    """Handle the receiver flow with new key exchange process."""
+    print("\nStarting plink receiver...")
     log("Receiver mode initiated", LogType.INFO, "Started", log_path)
 
     # Validate output directory
     if not validate_output_dir(output_dir):
         return False
+    print(f"Output directory: {os.path.abspath(output_dir)}")
 
-    # Generate cryptographic keys
-    print(" Generating encryption keys...")
-    private_pem, public_pem = GenKey()
-    private_key = serialization.load_pem_private_key(private_pem.encode(), password=None)
-    log("Cryptographic keys generated", LogType.INFO, "Success", log_path)
+    # Step 1: Generate cryptographic keys
+    print("\nGenerating encryption keys...")
+    try:
+        private_pem, public_pem = GenKey()
+        private_key = serialization.load_pem_private_key(private_pem.encode(), password=None)
+        log("Cryptographic keys generated", LogType.INFO, "Success", log_path)
+    except Exception as e:
+        print(f"Key generation failed: {e}")
+        log(f"Key generation failed: {e}", LogType.ERROR, "Failure", log_path)
+        return False
 
-    # Analyze network
-    print(" Analyzing your network...")
+    # Step 2: Display public key and get peer's public key
+    print("\n" + "="*80)
+    print("YOUR PUBLIC KEY (share this with the sender):")
+    print("="*80)
+    print(public_pem)
+    print("="*80)
+    print("\nPlease copy the above public key and send it to the sender.")
+    print("Then paste the sender's public key below when you receive it.\n")
+
+    # Get peer's public key
+    while True:
+        print("Waiting for sender's public key...")
+        peer_public_key_pem = input("Enter the sender's public key (paste here): ").strip()
+
+        if peer_public_key_pem:
+            try:
+                peer_public_key = serialization.load_pem_public_key(peer_public_key_pem.encode())
+                print("Sender's public key loaded successfully!")
+                log("Peer's public key loaded successfully", LogType.INFO, "Success", log_path)
+                break
+            except Exception as e:
+                print(f"Invalid public key format: {e}")
+                print("Please enter a valid PEM-formatted public key")
+                continue
+        else:
+            print("Please enter the public key")
+
+    # Step 3: Analyze network
+    print("\nAnalyzing your network...")
     try:
         analyzer = NetworkAnalyzer()
-        network_metadata = analyzer.analyze_network()
-        network_metadata['public_key'] = public_pem
+        network_metadata = analyzer.analyze_network(log_path)
+        print(f"Network analysis completed. Found {len(network_metadata.get('open_ports', []))} available ports.")
         log("Network analysis completed", LogType.INFO, "Success", log_path)
     except Exception as e:
-        print(f" Network analysis failed: {e}")
+        print(f"Network analysis failed: {e}")
         log(f"Network analysis failed: {e}", LogType.ERROR, "Failure", log_path)
         return False
 
-    # Generate and display link
-    print("\n Generating your plink link...")
+    # Step 4: Generate and display encrypted link
+    print("\nGenerating your encrypted plink link...")
     try:
-        my_link = generate_link(network_metadata)
+        my_link = generate_link(network_metadata, peer_public_key, log_path)
         print("\n" + "="*80)
-        print(" YOUR PLINK LINK (share this with the sender):")
+        print("YOUR PLINK LINK (share this with the sender):")
         print("="*80)
         print(my_link)
         print("="*80)
+        print("\nPlease copy the above plink link and send it to the sender.")
+        print("Then paste the sender's plink link below when you receive it.\n")
         log("Link generated successfully", LogType.INFO, "Success", log_path)
     except Exception as e:
-        print(f"❌ Failed to generate link: {e}")
+        print(f"Failed to generate link: {e}")
         log(f"Link generation failed: {e}", LogType.ERROR, "Failure", log_path)
         return False
 
-    # Get peer's link
-    print("\n Waiting for sender's plink link...")
+    # Step 5: Get peer's encrypted link
     while True:
-        peer_link = input("Enter the sender's plink link: ").strip()
+        print("Waiting for sender's plink link...")
+        peer_link = input("Enter the sender's plink link (paste here): ").strip()
+
         if peer_link:
             try:
-                peer_metadata = decrypt_link(peer_link)
-                peer_public_key_pem = peer_metadata.get('public_key')
-                if not peer_public_key_pem:
-                    print("❌ Error: Peer's public key not found in link. Please check the link.")
-                    continue
-
-                peer_public_key = serialization.load_pem_public_key(peer_public_key_pem.encode())
+                peer_metadata = decrypt_link(peer_link, private_key, log_path)
+                print("Sender's link decrypted successfully!")
                 log("Peer link decrypted successfully", LogType.INFO, "Success", log_path)
                 break
-
             except Exception as e:
-                print(f"❌ Invalid link format: {e}")
+                print(f"Invalid link format: {e}")
                 print("Please enter a valid plink:// link")
                 continue
         else:
             print("Please enter a link")
 
-    # Choose and execute strategy
-    print("\n Establishing connection...")
+    # Step 6: Choose and execute strategy
+    print("\nEstablishing connection...")
     strategy = choose_strategy(network_metadata, peer_metadata, private_key, peer_public_key, log_path, is_sender=False)
 
     if not strategy:
-        print("❌ Could not establish a P2P connection for the given network configuration.")
+        print("Could not establish a P2P connection for the given network configuration.")
         log("No suitable strategy found", LogType.ERROR, "Failure", log_path)
         return False
 
     try:
-        print(" Waiting for incoming file...")
+        print("\nWaiting for incoming file...")
         strategy.recv(output_dir)
-        print(f" File received successfully! Saved to: {output_dir}")
+        print(f"File received successfully! Saved to: {os.path.abspath(output_dir)}")
         log("File reception completed successfully", LogType.INFO, "Success", log_path)
         return True
 
     except Exception as e:
-        print(f"❌ File reception failed: {e}")
+        print(f"File reception failed: {e}")
         log(f"File reception failed: {e}", LogType.ERROR, "Failure", log_path)
         return False
 
@@ -317,14 +402,14 @@ Examples:
     # Receiver command
     receiver_parser = subparsers.add_parser('receive', help='Receive a file')
     receiver_parser.add_argument('output_dir', type=str, nargs='?', default='.',
-                               help='Directory to save the received file (default: current directory)')
+                                 help='Directory to save the received file (default: current directory)')
 
     args = parser.parse_args()
 
     # Setup logging
     log_path = "app.log"
     log("Application started", LogType.INFO, "Started", log_path)
-    print(" plink - Secure Peer-to-Peer File Transfer")
+    print("plink - Secure Peer-to-Peer File Transfer")
     print("=" * 50)
 
     try:
@@ -334,20 +419,20 @@ Examples:
             success = receiver_flow(args.output_dir, log_path)
 
         if success:
-            print("\n Transfer completed successfully! Exiting...")
+            print("\nTransfer completed successfully! Exiting...")
             log("Application completed successfully", LogType.INFO, "Success", log_path)
             sys.exit(0)
         else:
-            print("\n Transfer failed. Check the logs for details.")
+            print("\nTransfer failed. Check the logs for details.")
             log("Application completed with errors", LogType.ERROR, "Failure", log_path)
             sys.exit(1)
 
     except KeyboardInterrupt:
-        print("\n\n  Transfer cancelled by user.")
+        print("\n\nTransfer cancelled by user.")
         log("Application cancelled by user", LogType.WARNING, "Cancelled", log_path)
         sys.exit(1)
     except Exception as e:
-        print(f"\n Unexpected error: {e}")
+        print(f"\nUnexpected error: {e}")
         log(f"Unexpected error: {e}", LogType.CRITICAL, "Failure", log_path)
         sys.exit(1)
 

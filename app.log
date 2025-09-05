@@ -1,0 +1,4 @@
+2025-09-05T21:17:33.006993 INFO main Started Application started
+2025-09-05T21:17:33.007449 INFO sender_flow Started Sender mode initiated
+2025-09-05T21:17:33.626509 INFO sender_flow Success Cryptographic keys generated
+2025-09-05T21:18:09.992500 WARNING main Cancelled Application cancelled by user

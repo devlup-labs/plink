@@ -1,3 +1,4 @@
+base58==2.1.1
 blinker==1.9.0
 certifi==2025.6.15
 cffi==1.17.1
@@ -13,6 +14,7 @@ itsdangerous==1.1.0
 Jinja2==2.11.0
 MarkupSafe==3.0.2
 miniupnpc==2.3.3
+msgpack==1.1.1
 packaging==25.0
 pathlib==1.0.1
 pluggy==1.6.0
@@ -178,11 +180,12 @@ pyobjc-framework-Virtualization==11.1
 pyobjc-framework-Vision==11.1
 pyobjc-framework-WebKit==11.1
 pystun3==2.0.0
-stun==0.2.3
-requests==2.32.4
 pytest==8.4.1
 pyttsx3==2.98
 requests==2.32.4
+startrek==2.2.2
+stun==0.2.3
+udp==2.2.2
 urllib3==2.5.0
 uv==0.8.0
 Werkzeug==1.0.0

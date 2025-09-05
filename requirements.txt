@@ -1,10 +1,10 @@
+# Common / cross-platform packages
 blinker==1.9.0
 certifi==2025.6.15
 cffi==1.17.1
 charset-normalizer==3.4.2
 Click==7.0
 colorama==0.4.6
-comtypes==1.4.10
 cryptography==45.0.5
 Flask==1.1.4
 idna==3.10
@@ -14,176 +14,185 @@ Jinja2==2.11.0
 MarkupSafe==3.0.2
 miniupnpc==2.3.3
 packaging==25.0
-pathlib==1.0.1
 pluggy==1.6.0
 pycparser==2.22
 Pygments==2.19.2
-pyobjc==11.1
-pyobjc-core==11.1
-pyobjc-framework-Accessibility==11.1
-pyobjc-framework-Accounts==11.1
-pyobjc-framework-AddressBook==11.1
-pyobjc-framework-AdServices==11.1
-pyobjc-framework-AdSupport==11.1
-pyobjc-framework-AppleScriptKit==11.1
-pyobjc-framework-AppleScriptObjC==11.1
-pyobjc-framework-ApplicationServices==11.1
-pyobjc-framework-AppTrackingTransparency==11.1
-pyobjc-framework-AudioVideoBridging==11.1
-pyobjc-framework-AuthenticationServices==11.1
-pyobjc-framework-AutomaticAssessmentConfiguration==11.1
-pyobjc-framework-Automator==11.1
-pyobjc-framework-AVFoundation==11.1
-pyobjc-framework-AVKit==11.1
-pyobjc-framework-AVRouting==11.1
-pyobjc-framework-BackgroundAssets==11.1
-pyobjc-framework-BrowserEngineKit==11.1
-pyobjc-framework-BusinessChat==11.1
-pyobjc-framework-CalendarStore==11.1
-pyobjc-framework-CallKit==11.1
-pyobjc-framework-Carbon==11.1
-pyobjc-framework-CFNetwork==11.1
-pyobjc-framework-Cinematic==11.1
-pyobjc-framework-ClassKit==11.1
-pyobjc-framework-CloudKit==11.1
-pyobjc-framework-Cocoa==11.1
-pyobjc-framework-Collaboration==11.1
-pyobjc-framework-ColorSync==11.1
-pyobjc-framework-Contacts==11.1
-pyobjc-framework-ContactsUI==11.1
-pyobjc-framework-CoreAudio==11.1
-pyobjc-framework-CoreAudioKit==11.1
-pyobjc-framework-CoreBluetooth==11.1
-pyobjc-framework-CoreData==11.1
-pyobjc-framework-CoreHaptics==11.1
-pyobjc-framework-CoreLocation==11.1
-pyobjc-framework-CoreMedia==11.1
-pyobjc-framework-CoreMediaIO==11.1
-pyobjc-framework-CoreMIDI==11.1
-pyobjc-framework-CoreML==11.1
-pyobjc-framework-CoreMotion==11.1
-pyobjc-framework-CoreServices==11.1
-pyobjc-framework-CoreSpotlight==11.1
-pyobjc-framework-CoreText==11.1
-pyobjc-framework-CoreWLAN==11.1
-pyobjc-framework-CryptoTokenKit==11.1
-pyobjc-framework-DataDetection==11.1
-pyobjc-framework-DeviceCheck==11.1
-pyobjc-framework-DeviceDiscoveryExtension==11.1
-pyobjc-framework-DictionaryServices==11.1
-pyobjc-framework-DiscRecording==11.1
-pyobjc-framework-DiscRecordingUI==11.1
-pyobjc-framework-DiskArbitration==11.1
-pyobjc-framework-DVDPlayback==11.1
-pyobjc-framework-EventKit==11.1
-pyobjc-framework-ExceptionHandling==11.1
-pyobjc-framework-ExecutionPolicy==11.1
-pyobjc-framework-ExtensionKit==11.1
-pyobjc-framework-ExternalAccessory==11.1
-pyobjc-framework-FileProvider==11.1
-pyobjc-framework-FileProviderUI==11.1
-pyobjc-framework-FinderSync==11.1
-pyobjc-framework-FSEvents==11.1
-pyobjc-framework-FSKit==11.1
-pyobjc-framework-GameCenter==11.1
-pyobjc-framework-GameController==11.1
-pyobjc-framework-GameKit==11.1
-pyobjc-framework-GameplayKit==11.1
-pyobjc-framework-HealthKit==11.1
-pyobjc-framework-ImageCaptureCore==11.1
-pyobjc-framework-InputMethodKit==11.1
-pyobjc-framework-InstallerPlugins==11.1
-pyobjc-framework-InstantMessage==11.1
-pyobjc-framework-Intents==11.1
-pyobjc-framework-IntentsUI==11.1
-pyobjc-framework-IOBluetooth==11.1
-pyobjc-framework-IOBluetoothUI==11.1
-pyobjc-framework-IOSurface==11.1
-pyobjc-framework-iTunesLibrary==11.1
-pyobjc-framework-KernelManagement==11.1
-pyobjc-framework-LatentSemanticMapping==11.1
-pyobjc-framework-LaunchServices==11.1
-pyobjc-framework-libdispatch==11.1
-pyobjc-framework-libxpc==11.1
-pyobjc-framework-LinkPresentation==11.1
-pyobjc-framework-LocalAuthentication==11.1
-pyobjc-framework-LocalAuthenticationEmbeddedUI==11.1
-pyobjc-framework-MailKit==11.1
-pyobjc-framework-MapKit==11.1
-pyobjc-framework-MediaAccessibility==11.1
-pyobjc-framework-MediaExtension==11.1
-pyobjc-framework-MediaLibrary==11.1
-pyobjc-framework-MediaPlayer==11.1
-pyobjc-framework-MediaToolbox==11.1
-pyobjc-framework-Metal==11.1
-pyobjc-framework-MetalFX==11.1
-pyobjc-framework-MetalKit==11.1
-pyobjc-framework-MetalPerformanceShaders==11.1
-pyobjc-framework-MetalPerformanceShadersGraph==11.1
-pyobjc-framework-MetricKit==11.1
-pyobjc-framework-MLCompute==11.1
-pyobjc-framework-ModelIO==11.1
-pyobjc-framework-MultipeerConnectivity==11.1
-pyobjc-framework-NaturalLanguage==11.1
-pyobjc-framework-NetFS==11.1
-pyobjc-framework-Network==11.1
-pyobjc-framework-NetworkExtension==11.1
-pyobjc-framework-NotificationCenter==11.1
-pyobjc-framework-OpenDirectory==11.1
-pyobjc-framework-OSAKit==11.1
-pyobjc-framework-OSLog==11.1
-pyobjc-framework-PassKit==11.1
-pyobjc-framework-PencilKit==11.1
-pyobjc-framework-PHASE==11.1
-pyobjc-framework-Photos==11.1
-pyobjc-framework-PhotosUI==11.1
-pyobjc-framework-PreferencePanes==11.1
-pyobjc-framework-PushKit==11.1
-pyobjc-framework-Quartz==11.1
-pyobjc-framework-QuickLookThumbnailing==11.1
-pyobjc-framework-ReplayKit==11.1
-pyobjc-framework-SafariServices==11.1
-pyobjc-framework-SafetyKit==11.1
-pyobjc-framework-SceneKit==11.1
-pyobjc-framework-ScreenCaptureKit==11.1
-pyobjc-framework-ScreenSaver==11.1
-pyobjc-framework-ScreenTime==11.1
-pyobjc-framework-ScriptingBridge==11.1
-pyobjc-framework-SearchKit==11.1
-pyobjc-framework-Security==11.1
-pyobjc-framework-SecurityFoundation==11.1
-pyobjc-framework-SecurityInterface==11.1
-pyobjc-framework-SecurityUI==11.1
-pyobjc-framework-SensitiveContentAnalysis==11.1
-pyobjc-framework-ServiceManagement==11.1
-pyobjc-framework-SharedWithYou==11.1
-pyobjc-framework-SharedWithYouCore==11.1
-pyobjc-framework-ShazamKit==11.1
-pyobjc-framework-Social==11.1
-pyobjc-framework-SoundAnalysis==11.1
-pyobjc-framework-Speech==11.1
-pyobjc-framework-SpriteKit==11.1
-pyobjc-framework-StoreKit==11.1
-pyobjc-framework-Symbols==11.1
-pyobjc-framework-SyncServices==11.1
-pyobjc-framework-SystemConfiguration==11.1
-pyobjc-framework-SystemExtensions==11.1
-pyobjc-framework-ThreadNetwork==11.1
-pyobjc-framework-UniformTypeIdentifiers==11.1
-pyobjc-framework-UserNotifications==11.1
-pyobjc-framework-UserNotificationsUI==11.1
-pyobjc-framework-VideoSubscriberAccount==11.1
-pyobjc-framework-VideoToolbox==11.1
-pyobjc-framework-Virtualization==11.1
-pyobjc-framework-Vision==11.1
-pyobjc-framework-WebKit==11.1
 pystun3==2.0.0
 stun==0.2.3
 requests==2.32.4
 pytest==8.4.1
 pyttsx3==2.98
-requests==2.32.4
 urllib3==2.5.0
 uv==0.8.0
 Werkzeug==1.0.0
 zstandard==0.23.0
+comtypes==1.4.10
+
+# ---------------------------
+# Windows-only packages
+# ---------------------------
+pywin32==310; sys_platform == "win32"
+pypiwin32==223; sys_platform == "win32"
+
+# ---------------------------
+# macOS-only packages (Darwin)
+# ---------------------------
+pyobjc==11.1; sys_platform == "darwin"
+pyobjc-core==11.1; sys_platform == "darwin"
+pyobjc-framework-Accessibility==11.1; sys_platform == "darwin"
+pyobjc-framework-Accounts==11.1; sys_platform == "darwin"
+pyobjc-framework-AddressBook==11.1; sys_platform == "darwin"
+pyobjc-framework-AdServices==11.1; sys_platform == "darwin"
+pyobjc-framework-AdSupport==11.1; sys_platform == "darwin"
+pyobjc-framework-AppleScriptKit==11.1; sys_platform == "darwin"
+pyobjc-framework-AppleScriptObjC==11.1; sys_platform == "darwin"
+pyobjc-framework-ApplicationServices==11.1; sys_platform == "darwin"
+pyobjc-framework-AppTrackingTransparency==11.1; sys_platform == "darwin"
+pyobjc-framework-AudioVideoBridging==11.1; sys_platform == "darwin"
+pyobjc-framework-AuthenticationServices==11.1; sys_platform == "darwin"
+pyobjc-framework-AutomaticAssessmentConfiguration==11.1; sys_platform == "darwin"
+pyobjc-framework-Automator==11.1; sys_platform == "darwin"
+pyobjc-framework-AVFoundation==11.1; sys_platform == "darwin"
+pyobjc-framework-AVKit==11.1; sys_platform == "darwin"
+pyobjc-framework-AVRouting==11.1; sys_platform == "darwin"
+pyobjc-framework-BackgroundAssets==11.1; sys_platform == "darwin"
+pyobjc-framework-BrowserEngineKit==11.1; sys_platform == "darwin"
+pyobjc-framework-BusinessChat==11.1; sys_platform == "darwin"
+pyobjc-framework-CalendarStore==11.1; sys_platform == "darwin"
+pyobjc-framework-CallKit==11.1; sys_platform == "darwin"
+pyobjc-framework-Carbon==11.1; sys_platform == "darwin"
+pyobjc-framework-CFNetwork==11.1; sys_platform == "darwin"
+pyobjc-framework-Cinematic==11.1; sys_platform == "darwin"
+pyobjc-framework-ClassKit==11.1; sys_platform == "darwin"
+pyobjc-framework-CloudKit==11.1; sys_platform == "darwin"
+pyobjc-framework-Cocoa==11.1; sys_platform == "darwin"
+pyobjc-framework-Collaboration==11.1; sys_platform == "darwin"
+pyobjc-framework-ColorSync==11.1; sys_platform == "darwin"
+pyobjc-framework-Contacts==11.1; sys_platform == "darwin"
+pyobjc-framework-ContactsUI==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreAudio==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreAudioKit==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreBluetooth==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreData==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreHaptics==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreLocation==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreMedia==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreMediaIO==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreMIDI==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreML==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreMotion==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreServices==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreSpotlight==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreText==11.1; sys_platform == "darwin"
+pyobjc-framework-CoreWLAN==11.1; sys_platform == "darwin"
+pyobjc-framework-CryptoTokenKit==11.1; sys_platform == "darwin"
+pyobjc-framework-DataDetection==11.1; sys_platform == "darwin"
+pyobjc-framework-DeviceCheck==11.1; sys_platform == "darwin"
+pyobjc-framework-DeviceDiscoveryExtension==11.1; sys_platform == "darwin"
+pyobjc-framework-DictionaryServices==11.1; sys_platform == "darwin"
+pyobjc-framework-DiscRecording==11.1; sys_platform == "darwin"
+pyobjc-framework-DiscRecordingUI==11.1; sys_platform == "darwin"
+pyobjc-framework-DiskArbitration==11.1; sys_platform == "darwin"
+pyobjc-framework-DVDPlayback==11.1; sys_platform == "darwin"
+pyobjc-framework-EventKit==11.1; sys_platform == "darwin"
+pyobjc-framework-ExceptionHandling==11.1; sys_platform == "darwin"
+pyobjc-framework-ExecutionPolicy==11.1; sys_platform == "darwin"
+pyobjc-framework-ExtensionKit==11.1; sys_platform == "darwin"
+pyobjc-framework-ExternalAccessory==11.1; sys_platform == "darwin"
+pyobjc-framework-FileProvider==11.1; sys_platform == "darwin"
+pyobjc-framework-FileProviderUI==11.1; sys_platform == "darwin"
+pyobjc-framework-FinderSync==11.1; sys_platform == "darwin"
+pyobjc-framework-FSEvents==11.1; sys_platform == "darwin"
+pyobjc-framework-FSKit==11.1; sys_platform == "darwin"
+pyobjc-framework-GameCenter==11.1; sys_platform == "darwin"
+pyobjc-framework-GameController==11.1; sys_platform == "darwin"
+pyobjc-framework-GameKit==11.1; sys_platform == "darwin"
+pyobjc-framework-GameplayKit==11.1; sys_platform == "darwin"
+pyobjc-framework-HealthKit==11.1; sys_platform == "darwin"
+pyobjc-framework-ImageCaptureCore==11.1; sys_platform == "darwin"
+pyobjc-framework-InputMethodKit==11.1; sys_platform == "darwin"
+pyobjc-framework-InstallerPlugins==11.1; sys_platform == "darwin"
+pyobjc-framework-InstantMessage==11.1; sys_platform == "darwin"
+pyobjc-framework-Intents==11.1; sys_platform == "darwin"
+pyobjc-framework-IntentsUI==11.1; sys_platform == "darwin"
+pyobjc-framework-IOBluetooth==11.1; sys_platform == "darwin"
+pyobjc-framework-IOBluetoothUI==11.1; sys_platform == "darwin"
+pyobjc-framework-IOSurface==11.1; sys_platform == "darwin"
+pyobjc-framework-iTunesLibrary==11.1; sys_platform == "darwin"
+pyobjc-framework-KernelManagement==11.1; sys_platform == "darwin"
+pyobjc-framework-LatentSemanticMapping==11.1; sys_platform == "darwin"
+pyobjc-framework-LaunchServices==11.1; sys_platform == "darwin"
+pyobjc-framework-libdispatch==11.1; sys_platform == "darwin"
+pyobjc-framework-libxpc==11.1; sys_platform == "darwin"
+pyobjc-framework-LinkPresentation==11.1; sys_platform == "darwin"
+pyobjc-framework-LocalAuthentication==11.1; sys_platform == "darwin"
+pyobjc-framework-LocalAuthenticationEmbeddedUI==11.1; sys_platform == "darwin"
+pyobjc-framework-MailKit==11.1; sys_platform == "darwin"
+pyobjc-framework-MapKit==11.1; sys_platform == "darwin"
+pyobjc-framework-MediaAccessibility==11.1; sys_platform == "darwin"
+pyobjc-framework-MediaExtension==11.1; sys_platform == "darwin"
+pyobjc-framework-MediaLibrary==11.1; sys_platform == "darwin"
+pyobjc-framework-MediaPlayer==11.1; sys_platform == "darwin"
+pyobjc-framework-MediaToolbox==11.1; sys_platform == "darwin"
+pyobjc-framework-Metal==11.1; sys_platform == "darwin"
+pyobjc-framework-MetalFX==11.1; sys_platform == "darwin"
+pyobjc-framework-MetalKit==11.1; sys_platform == "darwin"
+pyobjc-framework-MetalPerformanceShaders==11.1; sys_platform == "darwin"
+pyobjc-framework-MetalPerformanceShadersGraph==11.1; sys_platform == "darwin"
+pyobjc-framework-MetricKit==11.1; sys_platform == "darwin"
+pyobjc-framework-MLCompute==11.1; sys_platform == "darwin"
+pyobjc-framework-ModelIO==11.1; sys_platform == "darwin"
+pyobjc-framework-MultipeerConnectivity==11.1; sys_platform == "darwin"
+pyobjc-framework-NaturalLanguage==11.1; sys_platform == "darwin"
+pyobjc-framework-NetFS==11.1; sys_platform == "darwin"
+pyobjc-framework-Network==11.1; sys_platform == "darwin"
+pyobjc-framework-NetworkExtension==11.1; sys_platform == "darwin"
+pyobjc-framework-NotificationCenter==11.1; sys_platform == "darwin"
+pyobjc-framework-OpenDirectory==11.1; sys_platform == "darwin"
+pyobjc-framework-OSAKit==11.1; sys_platform == "darwin"
+pyobjc-framework-OSLog==11.1; sys_platform == "darwin"
+pyobjc-framework-PassKit==11.1; sys_platform == "darwin"
+pyobjc-framework-PencilKit==11.1; sys_platform == "darwin"
+pyobjc-framework-PHASE==11.1; sys_platform == "darwin"
+pyobjc-framework-Photos==11.1; sys_platform == "darwin"
+pyobjc-framework-PhotosUI==11.1; sys_platform == "darwin"
+pyobjc-framework-PreferencePanes==11.1; sys_platform == "darwin"
+pyobjc-framework-PushKit==11.1; sys_platform == "darwin"
+pyobjc-framework-Quartz==11.1; sys_platform == "darwin"
+pyobjc-framework-QuickLookThumbnailing==11.1; sys_platform == "darwin"
+pyobjc-framework-ReplayKit==11.1; sys_platform == "darwin"
+pyobjc-framework-SafariServices==11.1; sys_platform == "darwin"
+pyobjc-framework-SafetyKit==11.1; sys_platform == "darwin"
+pyobjc-framework-SceneKit==11.1; sys_platform == "darwin"
+pyobjc-framework-ScreenCaptureKit==11.1; sys_platform == "darwin"
+pyobjc-framework-ScreenSaver==11.1; sys_platform == "darwin"
+pyobjc-framework-ScreenTime==11.1; sys_platform == "darwin"
+pyobjc-framework-ScriptingBridge==11.1; sys_platform == "darwin"
+pyobjc-framework-SearchKit==11.1; sys_platform == "darwin"
+pyobjc-framework-Security==11.1; sys_platform == "darwin"
+pyobjc-framework-SecurityFoundation==11.1; sys_platform == "darwin"
+pyobjc-framework-SecurityInterface==11.1; sys_platform == "darwin"
+pyobjc-framework-SecurityUI==11.1; sys_platform == "darwin"
+pyobjc-framework-SensitiveContentAnalysis==11.1; sys_platform == "darwin"
+pyobjc-framework-ServiceManagement==11.1; sys_platform == "darwin"
+pyobjc-framework-SharedWithYou==11.1; sys_platform == "darwin"
+pyobjc-framework-SharedWithYouCore==11.1; sys_platform == "darwin"
+pyobjc-framework-ShazamKit==11.1; sys_platform == "darwin"
+pyobjc-framework-Social==11.1; sys_platform == "darwin"
+pyobjc-framework-SoundAnalysis==11.1; sys_platform == "darwin"
+pyobjc-framework-Speech==11.1; sys_platform == "darwin"
+pyobjc-framework-SpriteKit==11.1; sys_platform == "darwin"
+pyobjc-framework-StoreKit==11.1; sys_platform == "darwin"
+pyobjc-framework-Symbols==11.1; sys_platform == "darwin"
+pyobjc-framework-SyncServices==11.1; sys_platform == "darwin"
+pyobjc-framework-SystemConfiguration==11.1; sys_platform == "darwin"
+pyobjc-framework-SystemExtensions==11.1; sys_platform == "darwin"
+pyobjc-framework-ThreadNetwork==11.1; sys_platform == "darwin"
+pyobjc-framework-UniformTypeIdentifiers==11.1; sys_platform == "darwin"
+pyobjc-framework-UserNotifications==11.1; sys_platform == "darwin"
+pyobjc-framework-UserNotificationsUI==11.1; sys_platform == "darwin"
+pyobjc-framework-VideoSubscriberAccount==11.1; sys_platform == "darwin"
+pyobjc-framework-VideoToolbox==11.1; sys_platform == "darwin"
+pyobjc-framework-Virtualization==11.1; sys_platform == "darwin"
+pyobjc-framework-Vision==11.1; sys_platform == "darwin"
+pyobjc-framework-WebKit==11.1; sys_platform == "darwin"

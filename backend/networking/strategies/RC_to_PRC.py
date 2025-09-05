@@ -25,12 +25,12 @@ class RestrictedToPortRestrictedNAT:
             log_path (str): The file path for logging.
         """
         # Self network details
-        self.self_ip = self_info["external_ip"]
-        self.self_ports = self_info["open_ports"]
+        self.self_ip = self_info.get("external_ip", self_info.get("local_ip", "127.0.0.1"))
+        self.self_ports = self_info.get("open_ports", [])
 
         # Peer network details
-        self.peer_ip = peer_info["external_ip"]
-        self.peer_ports = peer_info["open_ports"]
+        self.peer_ip = peer_info.get("external_ip", peer_info.get("local_ip", "127.0.0.1"))
+        self.peer_ports = peer_info.get("open_ports", [])
 
         # Cryptographic keys
         self.private_key = self_private_key
@@ -38,7 +38,7 @@ class RestrictedToPortRestrictedNAT:
 
         # System and logging configuration
         self.log_path = log_path
-        self.worker_count = min(cpu_count() * 2, len(self.self_ports))
+        self.worker_count = min(cpu_count() * 2, len(self.self_ports), len(self.peer_ports))
 
         # The first port pair is the dedicated control channel for metadata
         self.control_port_self = self.self_ports[0]
@@ -48,11 +48,11 @@ class RestrictedToPortRestrictedNAT:
         self.data_ports_self = self.self_ports[1:]
         self.data_ports_peer = self.peer_ports[1:]
 
-        log("Session initialized. Control channel established.", general_logfile_path=self.log_path)
+        log("RestrictedToPortRestrictedNAT session initialized", LogType.INFO, "Success", self.log_path)
 
     def _punch_hole(self, ports_self, ports_peer, rounds=5, delay=0.5):
-            
-        log(f"Starting NAT hole punching: Restricted NAT -> Port-Restricted NAT", general_logfile_path=self.log_path)
+
+        log(f"Starting NAT hole punching: Restricted NAT -> Port-Restricted NAT", LogType.INFO, "Started", self.log_path)
         sockets = []
 
         try:
@@ -74,8 +74,8 @@ class RestrictedToPortRestrictedNAT:
             for sock in sockets:
                 sock.close()
 
-        log(f"Hole punching done after {rounds} rounds.", general_logfile_path=self.log_path)
-        
+        log(f"Hole punching done after {rounds} rounds.", LogType.INFO, "Success", self.log_path)
+
     # --------------------------------------------------- #
     #                     SENDING LOGIC                   #
     # --------------------------------------------------- #
@@ -96,7 +96,7 @@ class RestrictedToPortRestrictedNAT:
         temp_dir = f"temp_sender_{os.getpid()}"
         os.makedirs(temp_dir, exist_ok=True)
         compressed_path = compress_file(filepath, temp_dir, self.log_path)
-        log(f"File compressed to {compressed_path}", general_logfile_path=self.log_path)
+        log(f"File compressed to {compressed_path}", LogType.INFO, "Success", self.log_path)
 
         metadata = retrieve_sender_metadata(
             file_path=str(compressed_path),
@@ -111,14 +111,14 @@ class RestrictedToPortRestrictedNAT:
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
                 sock.bind(('', self.control_port_self))
-                log("Sending file metadata. Awaiting confirmation from receiver...", general_logfile_path=self.log_path)
-                sock.sendto(b"[META_START]" + json.dumps(encrypted_metadata).encode() + b"[META_END]", (self.peer_ip, self.control_port_peer))
+                log("Sending file metadata. Awaiting confirmation from receiver...", LogType.INFO, "Started", self.log_path)
+                sock.sendto(b"[META_START]" + encrypted_metadata.encode() + b"[META_END]", (self.peer_ip, self.control_port_peer))
 
                 sock.settimeout(60.0) # Wait up to 60 seconds for the receiver's 'OK'
                 ack, _ = sock.recvfrom(1024)
                 if ack != b'META_OK':
                     raise ConnectionAbortedError("Receiver sent an invalid acknowledgment.")
-                log("Receiver confirmed metadata. Starting data transfer.", status="Success", general_logfile_path=self.log_path)
+                log("Receiver confirmed metadata. Starting data transfer.", LogType.INFO, "Success", self.log_path)
         except Exception as e:
             log(f"Metadata exchange failed: {e}", LogType.CRITICAL, "Failure", self.log_path)
             return
@@ -139,9 +139,14 @@ class RestrictedToPortRestrictedNAT:
         for p in processes:
             p.join()
 
-        log("File data sent successfully.", status="Success", general_logfile_path=self.log_path)
-        os.remove(compressed_path)
-        os.rmdir(temp_dir)
+        log("File data sent successfully.", LogType.INFO, "Success", self.log_path)
+
+        # Cleanup
+        try:
+            os.remove(compressed_path)
+            os.rmdir(temp_dir)
+        except OSError:
+            pass
 
     def _send_worker(self, chunks):
         """Worker process for sending chunks using mapped ports."""
@@ -151,7 +156,8 @@ class RestrictedToPortRestrictedNAT:
             for i in range(len(self.data_ports_self)):
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 sock.bind(('', self.data_ports_self[i]))
-                sockets.append((sock, self.data_ports_peer[i]))
+                peer_port = self.data_ports_peer[i] if i < len(self.data_ports_peer) else self.data_ports_peer[0]
+                sockets.append((sock, peer_port))
 
             for i, (chunk_num, chunk_data) in enumerate(chunks):
                 header = f"[{chunk_num}]".encode()
@@ -180,15 +186,15 @@ class RestrictedToPortRestrictedNAT:
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
                 sock.bind(('', self.control_port_self))
                 sock.settimeout(300.0) # Wait up to 5 minutes for a transfer to start
-                log("Ready to receive. Listening for incoming metadata...", general_logfile_path=self.log_path)
+                log("Ready to receive. Listening for incoming metadata...", LogType.INFO, "Started", self.log_path)
                 data, peer_addr = sock.recvfrom(4096)
 
                 if not data.startswith(b"[META_START]"):
                     raise ValueError("Received invalid metadata format.")
 
                 metadata_raw = data.split(b"[META_START]")[1].split(b"[META_END]")[0]
-                metadata = decryption(json.loads(metadata_raw.decode()), self.private_key, self.log_path)
-                log(f"Metadata decrypted successfully: {metadata}", general_logfile_path=self.log_path)
+                metadata = decryption(metadata_raw.decode(), self.private_key, self.log_path)
+                log(f"Metadata decrypted successfully: {metadata}", LogType.INFO, "Success", self.log_path)
 
                 # Acknowledge successful decryption to start the transfer
                 sock.sendto(b'META_OK', (self.peer_ip, self.control_port_peer))
@@ -217,16 +223,22 @@ class RestrictedToPortRestrictedNAT:
             if len(received_chunks) != total_chunks:
                 log(f"Incomplete transfer: Got {len(received_chunks)} of {total_chunks} chunks.", LogType.ERROR, "Failure", self.log_path)
             else:
-                log("All chunks received. Reassembling file.", status="Success", general_logfile_path=self.log_path)
+                log("All chunks received. Reassembling file.", LogType.INFO, "Success", self.log_path)
 
             chunk_logfile = os.path.join(temp_dir, "chunks.json")
             collect_chunks_parallel(list(received_chunks), chunk_logfile, self.log_path, temp_dir)
             joined_path = join_chunks(temp_dir, chunk_logfile, self.log_path, chunk_size=chunk_size)
             decompress_final_chunk(joined_path, output_path, self.log_path)
-            log(f"File successfully saved to {output_path}", status="Success", general_logfile_path=self.log_path)
+            log(f"File successfully saved to {output_path}", LogType.INFO, "Success", self.log_path)
 
-        os.remove(chunk_logfile)
-        os.rmdir(temp_dir)
+        # Cleanup
+        try:
+            if os.path.exists(chunk_logfile):
+                os.remove(chunk_logfile)
+            if os.path.exists(temp_dir):
+                os.rmdir(temp_dir)
+        except OSError:
+            pass
 
     def _recv_worker(self, received_chunks, total_chunks):
         """Worker process for receiving chunks using mapped ports."""
@@ -243,6 +255,8 @@ class RestrictedToPortRestrictedNAT:
                     try:
                         data, _ = sock.recvfrom(8192 + 100)
                         header_end = data.find(b"]")
+                        if header_end == -1:
+                            continue
                         chunk_num = int(data[1:header_end])
                         chunk_data = data[header_end + 1:]
                         received_chunks.append((chunk_data, chunk_num))

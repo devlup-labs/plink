@@ -180,6 +180,8 @@ pyobjc-framework-Virtualization==11.1
 pyobjc-framework-Vision==11.1
 pyobjc-framework-WebKit==11.1
 pystun3==2.0.0
+stun==0.2.3
+requests==2.32.4
 pytest==8.4.1
 pyttsx3==2.98
 requests==2.32.4

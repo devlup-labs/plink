@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 # Import utilities
 from utils.logging import log, LogType
 from utils.link import generate_link, decrypt_link
-from backend.networking.analyse_network import analyse_network
+from backend.networking.analyze_network import NetworkAnalyzer
 from backend.cryptography.utils.key_generation import GenKey
 
 # Import cryptographic utilities
@@ -141,7 +141,8 @@ def sender_flow(file_path, log_path):
     # Analyze network
     print(" Analyzing your network...")
     try:
-        network_metadata = analyse_network(log_path)
+        analyzer = NetworkAnalyzer()
+        network_metadata = analyzer.analyze_network()
         network_metadata['public_key'] = public_pem
         log("Network analysis completed", LogType.INFO, "Success", log_path)
     except Exception as e:
@@ -226,7 +227,8 @@ def receiver_flow(output_dir, log_path):
     # Analyze network
     print(" Analyzing your network...")
     try:
-        network_metadata = analyse_network(log_path)
+        analyzer = NetworkAnalyzer()
+        network_metadata = analyzer.analyze_network()
         network_metadata['public_key'] = public_pem
         log("Network analysis completed", LogType.INFO, "Success", log_path)
     except Exception as e:

